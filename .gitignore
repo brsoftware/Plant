@@ -1,0 +1,16 @@
+# We don't do build directories here.
+bin/
+build/
+cmake-build-debug/
+cmake-build-release/
+.idea/
+
+# We don't do Qt Creator cache files here.
+*.user
+CMakeLists.txt.user
+
+# We don't do macOS .DS_STORE files here.
+.DS_STORE
+
+# We don't ignore other files because they are indispensable to build.
+# We don't ignore ourselves. (Sorry for being psychologically deep)
