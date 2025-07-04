@@ -2139,8 +2139,14 @@ static void pl_switchStmt()
     int caseCount = 0;
     int previousCaseSkip = -1;
 
-    while (!pl_match(PL_TT_RIGHT_BRACE) && !pl_check(PL_TT_EOF))
+    while (!pl_match(PL_TT_RIGHT_BRACE))
     {
+        if (pl_check(PL_TT_EOF))
+        {
+            pl_errorCurrent("Expect '}' after 'switch'.");
+            return;
+        }
+
         if (pl_match(PL_TT_CASE) || pl_match(PL_TT_DEFAULT))
         {
             PlTokenType caseType = parser.prev.type;
