@@ -1710,6 +1710,16 @@ static PlExecResult pl_exec()
                 }
 
                 pl_push(PL_NUMERAL_VALUE((long long int)first ^ (long long int)second));
+                break;
+            }
+
+            if (PL_IS_BOOL(pl_peek(0)) && PL_IS_BOOL(pl_peek(0)))
+            {
+                bool second = PL_AS_BOOL(pl_pop()) == true;
+                bool first = PL_AS_BOOL(pl_pop()) == true;
+
+                pl_push(first ^ second ? PL_TRUE_VALUE : PL_FALSE_VALUE);
+                break;
             }
 
             else
@@ -1745,6 +1755,7 @@ static PlExecResult pl_exec()
                 }
 
                 pl_push(PL_NUMERAL_VALUE((long long int)first | (long long int)second));
+                break;
             }
 
             if (PL_IS_MAPPING(pl_peek(0)) && PL_IS_MAPPING(pl_peek(1)))
