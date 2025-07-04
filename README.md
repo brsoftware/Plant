@@ -59,6 +59,28 @@ Plant [1] >>> credits();
 
 > And also a huge thank to Robert Nystrom and his *Crafting Interpreters*. To be candid, this project of Plant is but an *evolved* version of Lox, the little toy language implemented in his book. If Lox is a harp where only chords could be played, Plant is but the harp in *Jack and the Beans*. She could sing, dance, and is sentimental, but is a harp after all. In fact, Plant is greatly influenced by Lox. Had there not been kind instructions from our predecesor, Plant would not have been here.
 
+## Building
+Our official implementation of Plant is completely in C (may include a bit C++ in the future).
+
+You may build Plant anytime, on any platform that supports a C compiler. We build via `gcc` (on Windows it is `mingw`, which is `gcc`-compatible), but I think that Apple LLVM/ Clang and Microsoft(R) Visual C++(TM) should be fine too, as long as it supports ISO C.
+
+Download the code. It is in the license of the GNU GPL version 3, so do whatever you love to our code. Just keep in mind, if unlikely you messed up your computer to a bluescript with a disappointed face, we would not be responsible for that, according to the License. Also according to the License, remember to share your modified source code if you make a wonderful change or rewrite some splendid comments or instructions, *and* you decided to distribute it to someone else.
+
+Anyway, back to the topic, fire up any IDE. If you ask, for open-source freeware, we recommend Qt Creator; for free software, we recommend CLion(TM) (non-commercial) by JetBrains(R). They handle `CMakeLists.txt` *very* well.
+
+If you opt not to do so, it's completely fine, just fetch a text shell and input the following instruction (hey, remember to install CMake also, at least version 
+3.16!):
+
+```
+$ mkdir build; cd build
+$ cmake ../
+$ cmake -b .
+$ mingw32-make # or make, or nmake etc.
+$ release/Plant.exe # depending on your config
+```
+
+A little good news: so far, Plant does not have any external dependencies, so you don't need to install any additional libraries as prerequisite.
+
 ## Usage and docs
 More documentation will be available when Plant is mature.
 
@@ -558,21 +580,26 @@ print x; // 6
 // Class declarations
 class Name {
     (function declarations called *methods*, if any)
-    func asdf(){}
+    func asdf(){print "Name: asdf";}
     operator +(n) { // Operator overloading (if any)
         return this.a + n.a;
     } // "this" refers to this class
 }
 
 // Inheritance
-class NameChild : Name {}
+class NameChild : Name {
+    func asdf(){print "asdf";}
+    func asdf_super() {super.asdf();}  // super can only access fields,
+        // instead of the class instance its own
+}
 
 class EmptyClass {}  // Creates a CLASS of EmptyClass
 
 var empty = EmptyClass();  // Creates an INSTANCE of EmptyClass
 // empty.asdf();  // error
 var n = NameChild();
-n.asdf();  // valid
+n.asdf();  // valid, prints "asdf"
+n.asdf_super();  // valid, fetches Name::asdf and prints "Name: asdf"
 n.a = 3; // valid
 var otherN = NameChild();
 // print otherN.a;  // Invalid, only *instance* n has *field* a
