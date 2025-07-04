@@ -159,21 +159,21 @@ String is basically text in programming. To represent string, you use different 
 The first two delimiters, named double quotation mark and single quotation mark (sometimes "apostrophe"), are almost identical; which is unlike C/C++, where single quoted content is a character while double quoted content is a string.
 
 ##### Escape sequence
-You could represent different characters but using a predefined sets of conventions after a `\\` symbol. They are:
+You could represent different characters but using a predefined sets of conventions after a `\` symbol. They are:
 
-* `\\a` converts to BELL, ASCII `0x7`;
-* `\\b` converts to BACKSPACE, ASCII `0x8`;
-* `\\f` converts to FORMFEED, ASCII `0xc`;
-* `\\n` converts to NEWLINE, ASCII `0xa`;
-* `\\r` converts to RETURN, ASCII `0xd`;
-* `\\t` converts to TAB, ASCII `0x9`;
-* `\\v` converts to VERTICAL TAB, ASCII `0xb`;
-* `\\\\` escapes the `\\` character itself;
-* `\\'` escpaes the `'` character itself, preventing from string termination;
-* `\\"` escapes the `"` character itself, preventing from string termination;
-* `\\ddd` converts to ASCII `0oddd`, where `d` is an octal value. Note that `ddd` must be larger than or equal to 0 and smaller than `0o400`.
-* `\\xdd` converts to ASCII `0xdd`, where `d` is a hexadecimal value.
-* `\\uabcd` and `\\Uabcdefgh` converts to Unicode `0xabcd` or UTF-32 `0xabcdefgh` respectively. Note that due to technical reason, `ab` or `abcdef` must be 0's respectively, because full Unicode is not yet supported in Plant. In other words, this sequence acts like `\\xdd`.
+* `\a` converts to BELL, ASCII `0x7`;
+* `\b` converts to BACKSPACE, ASCII `0x8`;
+* `\f` converts to FORMFEED, ASCII `0xc`;
+* `\n` converts to NEWLINE, ASCII `0xa`;
+* `\r` converts to RETURN, ASCII `0xd`;
+* `\t` converts to TAB, ASCII `0x9`;
+* `\v` converts to VERTICAL TAB, ASCII `0xb`;
+* `\\` escapes the `\` character itself;
+* `\'` escpaes the `'` character itself, preventing from string termination;
+* `\"` escapes the `"` character itself, preventing from string termination;
+* `\ddd` converts to ASCII `0oddd`, where `d` is an octal value. Note that `ddd` must be larger than or equal to 0 and smaller than `0o400`.
+* `\xdd` converts to ASCII `0xdd`, where `d` is a hexadecimal value.
+* `\uabcd` and `\Uabcdefgh` converts to Unicode `0xabcd` or UTF-32 `0xabcdefgh` respectively. Note that due to technical reason, `ab` or `abcdef` must be 0's respectively, because full Unicode is not yet supported in Plant. In other words, this sequence acts like `\xdd`.
 
 #### Integers
 All numeral values in Plant are `double` in C, and are known as `real`. However, integer notations are still supported:
