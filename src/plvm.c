@@ -1642,6 +1642,18 @@ static PlExecResult pl_exec()
                 break;
             }
 
+            else if (PL_IS_STRING(pl_peek(0)))
+            {
+                PlString *str = PL_AS_STRING(pl_peek(0));
+
+                for (int index = 0; index < str->length / 2; index++)
+                {
+                    char temp = str->chars[index];
+                    str->chars[index] = str->chars[str->length - index - 1];
+                    str->chars[str->length - index - 1] = temp;
+                }
+            }
+
             else
             {
                 if (PL_IS_INSTANCE(pl_peek(0)))
