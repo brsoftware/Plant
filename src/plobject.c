@@ -307,11 +307,13 @@ static void pl_printFuncString(PlFunction *function, char *string)
     if (function->name == NULL)
     {
         sprintf(string, "<module>");
+        return;
     }
 
     if (strcmp(function->name->chars, "]") == 0)
     {
         sprintf(string, "<lambda function at %p>", function);
+        return;
     }
 
     sprintf(string, "<function %s at %p>", function->name->chars, function);

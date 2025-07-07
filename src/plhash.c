@@ -87,7 +87,8 @@ PlString *pl_hashFindString(PlHash *table, const char *chars, int length, uint32
 
     uint32_t index = hash & (table->capacity - 1);
 
-    for (;;) {
+    for (;;)
+    {
         PlHashEntry *entry = &table->entries[index];
 
         if (entry->key == NULL)
@@ -163,7 +164,8 @@ static PlHashEntry *pl_findEntry(PlHashEntry *entries, int capacity, PlString *k
     uint32_t index = key->hash & (capacity - 1);
     PlHashEntry *remark = NULL;
 
-    for (;;) {
+    for (;;)
+    {
         PlHashEntry *entry = &entries[index];
 
         if (entry->key == NULL)

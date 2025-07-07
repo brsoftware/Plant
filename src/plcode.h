@@ -73,7 +73,8 @@ typedef enum PlCode
     PL_METHOD_LONG,
     PL_VECTOR,
     PL_MAP,
-    PL_SIZEOF
+    PL_SIZEOF,
+    PL_INVALID = 255
 } PlCode;
 
 const char *pl_codeToStr(PlCode code);

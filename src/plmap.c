@@ -99,7 +99,8 @@ PlString *pl_mapFindString(PlMap *map, const char *chars, int length, uint32_t h
 
     uint32_t index = hash & (map->capacity - 1);
 
-    for (;;) {
+    for (;;)
+    {
         PlMapItem *item = &map->items[index];
 
         if (PL_IS_EMPTY(item->key))
@@ -196,7 +197,8 @@ static PlMapItem *pl_finditem(PlMapItem *items, int capacity, PlValue key)
 
     PlMapItem *remark = NULL;
 
-    for (;;) {
+    for (;;)
+    {
         PlMapItem *item = &items[index];
 
         if (PL_IS_EMPTY(item->key))

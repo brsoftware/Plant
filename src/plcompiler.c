@@ -84,6 +84,7 @@ static void pl_breakStmt();
 static void pl_call(bool assignable);
 static bool pl_check(PlTokenType type);
 static void pl_classDecl();
+static uint8_t pl_complimentGet(uint8_t getCode);
 static void pl_conditional(bool assignable);
 static void pl_continueStmt();
 static void pl_consume(PlTokenType type, const char *msg);
@@ -129,6 +130,7 @@ static void pl_or(bool assignable);
 static void pl_parsePrecedence(PlPrecedence precedence);
 static int pl_parseVar(const char *msg);
 static void pl_patchJump(int offset);
+static uint8_t pl_peekPrev(int offset);
 static void pl_printStmt();
 static int pl_resolveLocal(PlComp *comp, PlToken *name);
 static int pl_resolveSurvalue(PlComp *comp, PlToken *name);
@@ -197,36 +199,37 @@ PlParseRule rules[] = {
     [PL_TT_AND]                   = {NULL,             pl_and,         PL_PREC_AND},
     [PL_TT_BREAK]                 = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_CASE]                  = {NULL,             NULL,           PL_PREC_NONE},
-    // [PL_TT_CATCH]                 = {NULL,             NULL,           PL_PREC_NONE},
+    [PL_TT_CATCH]                 = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_CLASS]                 = {NULL,             NULL,           PL_PREC_NONE},
+    [PL_TT_CONST]                 = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_CONTINUE]              = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_DEFAULT]               = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_DO]                    = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_ELSE]                  = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_FALSE]                 = {pl_literal,       NULL,           PL_PREC_NONE},
-    // [PL_TT_FINAL]                 = {NULL,             NULL,           PL_PREC_NONE},
-    // [PL_TT_FINALLY]               = {NULL,             NULL,           PL_PREC_NONE},
+    [PL_TT_FINAL]                 = {NULL,             NULL,           PL_PREC_NONE},
+    [PL_TT_FINALLY]               = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_FOR]                   = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_FUNC]                  = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_IF]                    = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_NOBREAK]               = {NULL,             NULL,           PL_PREC_NONE},
-    // [PL_TT_NOEXCEPT]              = {NULL,             NULL,           PL_PREC_NONE},
+    [PL_TT_NOEXCEPT]              = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_NULL]                  = {pl_literal,       NULL,           PL_PREC_NONE},
     [PL_TT_OR]                    = {NULL,             pl_or,          PL_PREC_OR},
     [PL_TT_OPERATOR]              = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_PRINT]                 = {NULL,             NULL,           PL_PREC_NONE},
-    // [PL_TT_PRIVATE]               = {NULL,             NULL,           PL_PREC_NONE},
-    // [PL_TT_PROTECTED]             = {NULL,             NULL,           PL_PREC_NONE},
-    // [PL_TT_PUBLIC]                = {NULL,             NULL,           PL_PREC_NONE},
+    [PL_TT_PRIVATE]               = {NULL,             NULL,           PL_PREC_NONE},
+    [PL_TT_PROTECTED]             = {NULL,             NULL,           PL_PREC_NONE},
+    [PL_TT_PUBLIC]                = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_RETURN]                = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_SIZEOF]                = {pl_sizeof,        NULL,           PL_PREC_NONE},
-    // [PL_TT_STATIC]                = {NULL,             NULL,           PL_PREC_NONE},
+    [PL_TT_STATIC]                = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_SUPER]                 = {pl_super,         NULL,           PL_PREC_NONE},
     [PL_TT_SWITCH]                = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_THIS]                  = {pl_this,          NULL,           PL_PREC_NONE},
-    // [PL_TT_THROW]                 = {NULL,             NULL,           PL_PREC_NONE},
+    [PL_TT_THROW]                 = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_TRUE]                  = {pl_literal,       NULL,           PL_PREC_NONE},
-    // [PL_TT_TRY]                   = {NULL,             NULL,           PL_PREC_NONE},
+    [PL_TT_TRY]                   = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_VAR]                   = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_WHILE]                 = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_ERROR]                 = {NULL,             NULL,           PL_PREC_NONE},
@@ -596,6 +599,33 @@ static void pl_classDecl()
     }
 
     curCls = curCls->parent;
+}
+
+static uint8_t pl_complementGet(uint8_t getCode)
+{
+    switch (getCode)
+    {
+    case PL_GET_GLOBAL:
+        return PL_SET_GLOBAL;
+    case PL_GET_GLOBAL_LONG:
+        return PL_SET_GLOBAL_LONG;
+    case PL_GET_INDEX:
+        return PL_SET_INDEX;
+    case PL_GET_LOCAL:
+        return PL_SET_LOCAL;
+    case PL_GET_LOCAL_LONG:
+        return PL_SET_LOCAL_LONG;
+    case PL_GET_PROPERTY:
+        return PL_SET_PROPERTY;
+    case PL_GET_PROPERTY_LONG:
+        return PL_SET_PROPERTY_LONG;
+    case PL_GET_SURVALUE:
+        return PL_SET_SURVALUE;
+    case PL_GET_SURVALUE_LONG:
+        return PL_SET_SURVALUE_LONG;
+    }
+
+    return getCode;
 }
 
 static void pl_conditional(bool assignable)
@@ -997,7 +1027,8 @@ static void pl_error(const char *msg)
     pl_errorAt(&parser.prev, msg);
 }
 
-static void pl_errorAt(PlToken *token, const char *msg) {
+static void pl_errorAt(PlToken *token, const char *msg)
+{
     if (parser.panic)
       return;
 
@@ -1798,6 +1829,16 @@ static void pl_patchJump(int offset)
     pl_curSeg()->code[offset + 1] = jump & 0xff;
 }
 
+static uint8_t pl_peekPrev(int offset)
+{
+    if (pl_curSeg()->count < offset)
+    {
+        return PL_INVALID;
+    }
+
+    return pl_curSeg()->code[pl_curSeg()->count - 1 - offset];
+}
+
 static void pl_printStmt()
 {
     if (pl_match(PL_TT_SEMICOLON))
@@ -1963,6 +2004,7 @@ static void pl_string(bool assignable)
         if (!strContent)
         {
             pl_error("Memory allocation failed.");
+            free(comb);
             return;
         }
 
@@ -2215,7 +2257,8 @@ static void pl_sync()
 {
     parser.panic = false;
 
-    while (parser.cur.type != PL_TT_EOF) {
+    while (parser.cur.type != PL_TT_EOF)
+    {
         if (parser.prev.type == PL_TT_SEMICOLON)
             return;
 

@@ -12,7 +12,8 @@ void pl_initValueArray(PlValueArray *array)
 
 void pl_writeValueArray(PlValueArray *array, PlValue value)
 {
-    if (array->capacity < array->count + 1) {
+    if (array->capacity < array->count + 1)
+    {
         int oldCapacity = array->capacity;
         array->capacity = PL_GROW_CAPAC(oldCapacity);
         array->values = PL_GROW_ARRAY(PlValue, array->values, oldCapacity, array->capacity);

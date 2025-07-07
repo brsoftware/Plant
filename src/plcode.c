@@ -144,6 +144,8 @@ const char *pl_codeToStr(PlCode code)
         return "map";
     case PL_SIZEOF:
         return "sizeof";
+    case PL_INVALID:
+        return "INVALID";
     default:
         return "unknown";
     }

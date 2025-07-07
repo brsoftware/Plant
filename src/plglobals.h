@@ -1,6 +1,7 @@
 #ifndef PLGLOBALS_H
 #define PLGLOBALS_H
 
+#include <limits.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -10,7 +11,7 @@
 
 #define PL_VERSION_MAJOR 0
 #define PL_VERSION_MINOR 7
-#define PL_VERSION_MICRO 0
+#define PL_VERSION_MICRO 1
 
 #if defined(__GNUC__)
     #if defined(__llvm__)

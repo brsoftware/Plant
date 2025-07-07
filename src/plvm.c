@@ -294,7 +294,7 @@ static bool pl_builtin_getLine(int argCount, PlValue *args)
     {
         if (PL_IS_STRING(args[0]))
         {
-            printf(PL_AS_STRING(args[0])->chars);
+            printf("%s", PL_AS_STRING(args[0])->chars);
 
             char line[1024];
 
@@ -498,7 +498,8 @@ static bool pl_builtin_toString(int argCount, PlValue *args)
 static bool pl_bindMethod(PlClass *cls, PlString *name)
 {
     PlValue method;
-    if (!pl_hashGet(&cls->methods, name, &method)) {
+    if (!pl_hashGet(&cls->methods, name, &method))
+    {
         pl_runtimeError("'class %s' has no member named '%s'.", cls->name->chars, name->chars);
         return false;
     }
@@ -682,7 +683,7 @@ static PlExecResult pl_exec()
 
     for (;;)
     {
-        uint8_t instruction;
+        uint8_t instruction = READ_BYTE();
 
         // printf("op: %s (%d) -> ", pl_codeToStr(instruction), instruction);
         // if (instruction == PL_GET_LOCAL || instruction == PL_SET_LOCAL
@@ -696,7 +697,7 @@ static PlExecResult pl_exec()
         // }
         // printf("\n");
 
-        switch (instruction = READ_BYTE())
+        switch (instruction)
         {
         case PL_CONSTANT: {
             PlValue constant = READ_CONSTANT();
@@ -765,7 +766,8 @@ static PlExecResult pl_exec()
         case PL_SET_GLOBAL: {
             PlString *name = READ_STRING();
 
-            if (pl_hashSet(&vm.globals, name, pl_peek(0))) {
+            if (pl_hashSet(&vm.globals, name, pl_peek(0)))
+            {
                 pl_hashDel(&vm.globals, name);
                 pl_runtimeError("'%s' was not declared in the global scope.", name->chars);
                 return PL_RST_EXCEPTION;
@@ -863,7 +865,7 @@ static PlExecResult pl_exec()
                         if (value < 0)
                             value += vec->items.count;
 
-                        if (value <= LONG_LONG_MAX)
+                        if (value <= (double)LONG_LONG_MAX)
                         {
                             if (value < vec->items.count)
                             {
@@ -931,7 +933,7 @@ static PlExecResult pl_exec()
                         if (value < 0)
                             value += str->length;
 
-                        if (value <= LONG_LONG_MAX)
+                        if (value <= (double)LONG_LONG_MAX)
                         {
                             if (value < str->length)
                             {
@@ -977,7 +979,7 @@ static PlExecResult pl_exec()
                         if (value < 0)
                             value += vec->items.count;
 
-                        if (value <= LONG_LONG_MAX)
+                        if (value <= (double)LONG_LONG_MAX)
                         {
                             if (value < vec->items.count)
                             {
@@ -1053,7 +1055,7 @@ static PlExecResult pl_exec()
                         if (value < 0)
                             value += str->length;
 
-                        if (value <= LONG_LONG_MAX)
+                        if (value <= (double)LONG_LONG_MAX)
                         {
                             if (value < str->length)
                             {
@@ -1117,7 +1119,8 @@ static PlExecResult pl_exec()
         case PL_SET_GLOBAL_LONG: {
             PlString *name = READ_LONG_STRING();
 
-            if (pl_hashSet(&vm.globals, name, pl_peek(0))) {
+            if (pl_hashSet(&vm.globals, name, pl_peek(0)))
+            {
                 pl_hashDel(&vm.globals, name);
                 pl_runtimeError("'%s' was not declared in the global scope.", name->chars);
                 return PL_RST_EXCEPTION;
@@ -1455,7 +1458,7 @@ static PlExecResult pl_exec()
                     return PL_RST_EXCEPTION;
                 }
 
-                if (times > ULONG_LONG_MAX || times < 0)
+                if (times > (double)ULONG_LONG_MAX || times < 0)
                 {
                     pl_runtimeError("Integer overflow.");
                     return PL_RST_EXCEPTION;
@@ -1537,7 +1540,7 @@ static PlExecResult pl_exec()
                 double second = PL_AS_NUMERAL(pl_pop());
                 double first = PL_AS_NUMERAL(pl_pop());
 
-                if (first > INT64_MAX || second > INT64_MAX)
+                if (first > (double)INT64_MAX || second > (double)INT64_MAX)
                 {
                     pl_runtimeError("Integer Overflow.");
                     return PL_RST_EXCEPTION;
@@ -1627,7 +1630,7 @@ static PlExecResult pl_exec()
             {
                 double first = PL_AS_NUMERAL(pl_pop());
 
-                if (first > INT64_MAX)
+                if (first > (double)INT64_MAX)
                 {
                     pl_runtimeError("Integer Overflow.");
                     return PL_RST_EXCEPTION;
@@ -1680,7 +1683,7 @@ static PlExecResult pl_exec()
                 double second = PL_AS_NUMERAL(pl_pop());
                 double first = PL_AS_NUMERAL(pl_pop());
 
-                if (first > INT64_MAX || second > INT64_MAX)
+                if (first > (double)INT64_MAX || second > (double)INT64_MAX)
                 {
                     pl_runtimeError("Integer Overflow.");
                     return PL_RST_EXCEPTION;
@@ -1715,7 +1718,7 @@ static PlExecResult pl_exec()
                 double second = PL_AS_NUMERAL(pl_pop());
                 double first = PL_AS_NUMERAL(pl_pop());
 
-                if (first > INT64_MAX || second > INT64_MAX)
+                if (first > (double)INT64_MAX || second > (double)INT64_MAX)
                 {
                     pl_runtimeError("Integer Overflow.");
                     return PL_RST_EXCEPTION;
@@ -1760,7 +1763,7 @@ static PlExecResult pl_exec()
                 double second = PL_AS_NUMERAL(pl_pop());
                 double first = PL_AS_NUMERAL(pl_pop());
 
-                if (first > INT64_MAX || second > INT64_MAX)
+                if (first > (double)(double)INT64_MAX || second > (double)(double)INT64_MAX)
                 {
                     pl_runtimeError("Integer Overflow.");
                     return PL_RST_EXCEPTION;
@@ -1805,7 +1808,7 @@ static PlExecResult pl_exec()
                 double second = PL_AS_NUMERAL(pl_pop());
                 double first = PL_AS_NUMERAL(pl_pop());
 
-                if (first > INT64_MAX || second > INT64_MAX)
+                if (first > (double)INT64_MAX || second > (double)INT64_MAX)
                 {
                     pl_runtimeError("Integer Overflow.");
                     return PL_RST_EXCEPTION;
@@ -1840,7 +1843,7 @@ static PlExecResult pl_exec()
                 double second = PL_AS_NUMERAL(pl_pop());
                 double first = PL_AS_NUMERAL(pl_pop());
 
-                if (first > INT64_MAX || second > INT64_MAX)
+                if (first > (double)INT64_MAX || second > (double)INT64_MAX)
                 {
                     pl_runtimeError("Integer Overflow.");
                     return PL_RST_EXCEPTION;
@@ -1985,7 +1988,8 @@ static PlExecResult pl_exec()
             int argCount = READ_BYTE();
             PlClass *superclass = PL_AS_CLASS(pl_pop());
 
-            if (!pl_invokeFromClass(superclass, method, argCount, '\0')) {
+            if (!pl_invokeFromClass(superclass, method, argCount, '\0'))
+            {
                 return PL_RST_EXCEPTION;
             }
 
@@ -2028,7 +2032,8 @@ static PlExecResult pl_exec()
             pl_closeSurvalues(frame->slots);
             vm.frameCount--;
 
-            if (vm.frameCount == 0) {
+            if (vm.frameCount == 0)
+            {
                 pl_pop();
                 return PL_RST_FINE;
             }
@@ -2352,7 +2357,7 @@ static bool pl_repeat()
         return false;
     }
 
-    if (times > ULONG_LONG_MAX || times < 0)
+    if (times > (double)ULONG_LONG_MAX || times < 0)
     {
         pl_runtimeError("Integer Overflow.");
         return false;

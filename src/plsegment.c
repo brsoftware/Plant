@@ -14,7 +14,8 @@ void pl_initSegment(PlSegment *segment)
     pl_initValueArray(&segment->constants);
 }
 
-void pl_freeSegment(PlSegment *segment) {
+void pl_freeSegment(PlSegment *segment)
+{
     PL_FREE_ARRAY(uint8_t, segment->code, segment->capacity);
     PL_FREE_ARRAY(int, segment->lines, segment->capacity);
     pl_freeValueArray(&segment->constants);
@@ -22,7 +23,8 @@ void pl_freeSegment(PlSegment *segment) {
     PL_FREE_ARRAY(PlLine, segment->lines, segment->lineCapacity);
 }
 
-void pl_writeSegment(PlSegment *segment, uint8_t byte, int line) {
+void pl_writeSegment(PlSegment *segment, uint8_t byte, int line)
+{
     if (segment->capacity < segment->count + 1)
     {
         int oldCapacity = segment->capacity;
@@ -73,10 +75,10 @@ int pl_writeConstant(PlSegment *segment, PlValue value, int line)
 
 int pl_addConstant(PlSegment *segment, PlValue value)
 {
-  pl_push(value);
-  pl_writeValueArray(&segment->constants, value);
-  pl_pop();
-  return segment->constants.count - 1;
+    pl_push(value);
+    pl_writeValueArray(&segment->constants, value);
+    pl_pop();
+    return segment->constants.count - 1;
 }
 
 int pl_getLine(PlSegment *segment, int instruction)

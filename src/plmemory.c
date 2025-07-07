@@ -17,13 +17,16 @@ void *pl_realloc(void *ptr, size_t oldSize, size_t newSize)
 {
     vm.bytesAllocated += newSize - oldSize;
 
-    if (newSize > oldSize) {
-        if (vm.bytesAllocated > vm.nextGC) {
+    if (newSize > oldSize)
+    {
+        if (vm.bytesAllocated > vm.nextGC)
+        {
             pl_collectGarbage();
         }
     }
 
-    if (newSize == 0) {
+    if (newSize == 0)
+    {
         free(ptr);
         return NULL;
     }

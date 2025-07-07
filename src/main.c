@@ -28,7 +28,7 @@ int main(int argc, const char* argv[])
 
     else
     {
-        fprintf(stderr, "Usage: Plant [path]\n");
+        fprintf(stderr, "Usage: plant [path]\n");
         fprintf(stderr, "path   : The path of the Plant script.\n");
         exit(64);
     }

@@ -54,6 +54,7 @@ uint32_t pl_hashValue(PlValue value, bool *ok)
     }
 
     *ok = false;
+    return 0;
 }
 
 bool pl_hashable(PlValue value)

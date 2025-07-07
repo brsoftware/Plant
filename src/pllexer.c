@@ -57,7 +57,8 @@ PlToken pl_scanToken()
     if (pl_isDigit(c))
         return pl_numeral();
 
-    switch (c) {
+    switch (c)
+    {
     case '\x04':
         exit(0);
     case '(':
@@ -212,8 +213,8 @@ static PlTokenType pl_idenType()
                     {
                     case 's':
                         return pl_checkKeyword(3, 1, "e", PL_TT_CASE);
-                    // case 't':
-                    //     return pl_checkKeyword(3, 2, "ch", PL_TT_CATCH);
+                    case 't':
+                        return pl_checkKeyword(3, 2, "ch", PL_TT_CATCH);
                     default:
                         break;
                     }
@@ -223,6 +224,8 @@ static PlTokenType pl_idenType()
             case 'l':
                 return pl_checkKeyword(2, 3, "ass", PL_TT_CLASS);
             case 'o':
+                if (lexer.current - lexer.start > 3)
+                    return pl_checkKeyword(3, 2, "st", PL_TT_CONST);
                 return pl_checkKeyword(2, 6, "ntinue", PL_TT_CONTINUE);
             default:
                 break;
@@ -254,13 +257,12 @@ static PlTokenType pl_idenType()
             {
             case 'a':
                 return pl_checkKeyword(2, 3, "lse", PL_TT_FALSE);
-            // case 'i':
-            //     if (lexer.current - lexer.start > 2 && lexer.start[2] == 'n')
-            //         return pl_checkKeyword(3, 4, "ally", PL_TT_FINALLY);
-            //     if (lexer.current - lexer.start == 5)
-            //         return lexer.start[2] == 'n' && lexer.start[3] == 'a' && lexer.start[4] == 'l'
-            //             ? PL_TT_FINAL : PL_TT_IDENTIFIER;
-            //     return PL_TT_IDENTIFIER;
+            case 'i':
+                if (lexer.current - lexer.start == 7)
+                    return pl_checkKeyword(2, 5, "nally", PL_TT_FINALLY);
+                if (lexer.current - lexer.start == 5)
+                    return pl_checkKeyword(2, 3, "nal", PL_TT_FINAL);
+                return PL_TT_IDENTIFIER;
             case 'o':
                 return pl_checkKeyword(2, 1, "r", PL_TT_FOR);
             case 'u':
@@ -300,8 +302,8 @@ static PlTokenType pl_idenType()
                     {
                     case 'b':
                         return pl_checkKeyword(3, 4, "reak", PL_TT_NOBREAK);
-                    // case 'e':
-                    //     return pl_checkKeyword(3, 5, "xcept", PL_TT_NOEXCEPT);
+                    case 'e':
+                        return pl_checkKeyword(3, 5, "xcept", PL_TT_NOEXCEPT);
                     case 't':
                         return pl_checkKeyword(3, 0, "t", PL_TT_BANG);
                     default:
@@ -350,24 +352,24 @@ static PlTokenType pl_idenType()
                             {
                             case 'n':
                                 return pl_checkKeyword(4, 1, "t", PL_TT_PRINT);
-                            // case 'v':
-                            //     return pl_checkKeyword(4, 3, "ate", PL_TT_PRIVATE);
+                            case 'v':
+                                return pl_checkKeyword(4, 3, "ate", PL_TT_PRIVATE);
                             default:
                                 break;
                             }
                         }
 
                         break;
-                    // case 'o':
-                    //     return pl_checkKeyword(3, 6, "tected", PL_TT_PROTECTED);
+                    case 'o':
+                        return pl_checkKeyword(3, 6, "tected", PL_TT_PROTECTED);
                     default:
                         break;
                     }
                 }
 
                 break;
-            // case 'u':
-            //     return pl_checkKeyword(2, 4, "blic", PL_TT_PUBLIC);
+            case 'u':
+                return pl_checkKeyword(2, 4, "blic", PL_TT_PUBLIC);
             default:
                 break;
             }
@@ -383,8 +385,8 @@ static PlTokenType pl_idenType()
             {
             case 'i':
                 return pl_checkKeyword(2, 4, "zeof", PL_TT_SIZEOF);
-            // case 't':
-            //     return pl_checkKeyword(2, 4, "atic", PL_TT_STATIC);
+            case 't':
+                return pl_checkKeyword(2, 4, "atic", PL_TT_STATIC);
             case 'u':
                 return pl_checkKeyword(2, 3, "per", PL_TT_SUPER);
             case 'w':
@@ -407,8 +409,8 @@ static PlTokenType pl_idenType()
                     {
                     case 'i':
                         return pl_checkKeyword(3, 1, "s", PL_TT_THIS);
-                    // case 'r':
-                    //     return pl_checkKeyword(3, 2, "ow", PL_TT_THROW);
+                    case 'r':
+                        return pl_checkKeyword(3, 2, "ow", PL_TT_THROW);
                     default:
                         break;
                     }
@@ -422,8 +424,8 @@ static PlTokenType pl_idenType()
                     {
                     case 'u':
                         return pl_checkKeyword(3, 1, "e", PL_TT_TRUE);
-                    // case 'y':
-                    //     return pl_checkKeyword(3, 0, "y", PL_TT_TRY);
+                    case 'y':
+                        return pl_checkKeyword(3, 0, "y", PL_TT_TRY);
                     default:
                         break;
                     }
@@ -699,7 +701,9 @@ static void pl_skipSpace(bool includeNewlines)
     for (;;)
     {
         char c = pl_peek();
-        switch (c) {
+
+        switch (c)
+        {
         case ' ':
         case '\r':
         case '\t':
@@ -812,7 +816,10 @@ static PlToken pl_string(char delimiter)
             char escape = pl_procSeq();
 
             if (impliedError)
+            {
+                free(buffer);
                 return impliedToken;
+            }
 
             if (escape == 0 && pl_peek() == '\n')
             {
