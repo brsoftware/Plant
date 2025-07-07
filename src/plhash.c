@@ -7,7 +7,7 @@
 #define PL_HASH_LOAD 0.75
 
 static void pl_adjustCapac(PlHash *hash, int capacity);
-static PlHashEntry *pl_findEntry(PlHashEntry *entries, int capacity, PlString *key);
+static PlHashEntry *pl_findEntry(PlHashEntry *entries, int capacity, const PlString *key);
 
 void pl_initHash(PlHash *hash)
 {
@@ -22,7 +22,7 @@ void pl_freeHash(PlHash *hash)
     pl_initHash(hash);
 }
 
-bool pl_hashGet(PlHash *hash, PlString *key, PlValue *value)
+bool pl_hashGet(const PlHash *hash, const PlString *key, PlValue *value)
 {
     if (hash->count == 0)
         return false;
@@ -53,7 +53,7 @@ bool pl_hashSet(PlHash *hash, PlString *key, PlValue value)
     return isNewKey;
 }
 
-bool pl_hashDel(PlHash *hash, PlString *key)
+bool pl_hashDel(const PlHash *hash, const PlString *key)
 {
     if (hash->count == 0)
         return false;
@@ -67,7 +67,7 @@ bool pl_hashDel(PlHash *hash, PlString *key)
     return true;
 }
 
-void pl_hashAdd(PlHash *from, PlHash *to)
+void pl_hashAdd(const PlHash *from, PlHash *to)
 {
     for (int index = 0; index < from->capacity; index++)
     {
@@ -80,7 +80,7 @@ void pl_hashAdd(PlHash *from, PlHash *to)
     }
 }
 
-PlString *pl_hashFindString(PlHash *table, const char *chars, int length, uint32_t hash)
+PlString *pl_hashFindString(const PlHash *table, const char *chars, int length, uint32_t hash)
 {
     if (table->count == 0)
         return NULL;
@@ -107,7 +107,7 @@ PlString *pl_hashFindString(PlHash *table, const char *chars, int length, uint32
     }
 }
 
-void pl_hashRemoveWhite(PlHash *hash)
+void pl_hashRemoveWhite(const PlHash *hash)
 {
     for (int index = 0; index < hash->capacity; index++)
     {
@@ -120,7 +120,7 @@ void pl_hashRemoveWhite(PlHash *hash)
     }
 }
 
-void pl_markHash(PlHash *hash)
+void pl_markHash(const PlHash *hash)
 {
     for (int index = 0; index < hash->capacity; index++)
     {
@@ -159,7 +159,7 @@ static void pl_adjustCapac(PlHash *hash, int capacity)
     hash->capacity = capacity;
 }
 
-static PlHashEntry *pl_findEntry(PlHashEntry *entries, int capacity, PlString *key)
+static PlHashEntry *pl_findEntry(PlHashEntry *entries, int capacity, const PlString *key)
 {
     uint32_t index = key->hash & (capacity - 1);
     PlHashEntry *remark = NULL;

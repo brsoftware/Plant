@@ -125,7 +125,7 @@ const char *pl_codeToStr(PlCode code)
     case PL_CLASS:
         return "cls";
     case PL_INHERIT:
-        return "inher";
+        return "inherit";
     case PL_METHOD:
         return "met";
     case PL_INVOKE_LONG:

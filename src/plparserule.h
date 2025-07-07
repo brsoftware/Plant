@@ -12,5 +12,4 @@ typedef struct PlParseRule
     PlPrecedence precedence;
 } PlParseRule;
 
-
 #endif // PLPARSERULE_H

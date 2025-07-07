@@ -92,4 +92,6 @@ typedef enum PlTokenType
     PL_TT_EOF
 } PlTokenType;
 
+const char *pl_tokToStr(PlTokenType type);
+
 #endif // PLTOKENTYPE_H

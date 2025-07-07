@@ -57,6 +57,7 @@ set(PLANT_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/PlToken
     ${CMAKE_CURRENT_LIST_DIR}/pltoken.h
     ${CMAKE_CURRENT_LIST_DIR}/PlTokenType
+    ${CMAKE_CURRENT_LIST_DIR}/pltokentype.c
     ${CMAKE_CURRENT_LIST_DIR}/pltokentype.h
     ${CMAKE_CURRENT_LIST_DIR}/PlValue
     ${CMAKE_CURRENT_LIST_DIR}/plvalue.c

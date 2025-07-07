@@ -23,6 +23,6 @@ void pl_writeSegment(PlSegment *segment, uint8_t byte, int line);
 int pl_writeConstant(PlSegment *segment, PlValue value, int line);
 int pl_addConstant(PlSegment *segment, PlValue value);
 
-int pl_getLine(PlSegment *segment, int instruction);
+int pl_getLine(const PlSegment *segment, int instruction);
 
 #endif // PLSEGMENT_H

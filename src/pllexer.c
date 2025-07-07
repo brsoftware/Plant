@@ -127,7 +127,6 @@ PlToken pl_scanToken()
             pl_match('=') ? PL_TT_GREATER_EQUAL :
                 pl_match('>') ? (pl_match('=') ? PL_TT_GREATER_GREATER_EQUAL : PL_TT_GREATER_GREATER) : PL_TT_GREATER);
     case '\\':
-        pl_advance();
         pl_skipSpace(false);
         if (pl_match('\n'))
             return pl_scanToken();
@@ -755,8 +754,7 @@ static void pl_skipSpace(bool includeNewlines)
                     pl_advance();
                 }
 
-                // while (pl_peek() == ' ' || pl_peek() == '\n' || pl_peek() == '\r' || pl_peek() == '\t')
-                while (pl_peek() <= ' ')
+                while (pl_peek() <= ' ' && !pl_isAtEnd())
                     pl_advance();
 
                 if (!commentClosed)

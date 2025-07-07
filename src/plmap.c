@@ -8,7 +8,7 @@
 #define PL_MAP_LOAD 0.75
 
 static void pl_adjustCapac(PlMap *map, int capacity);
-static PlMapItem *pl_finditem(PlMapItem *items, int capacity, PlValue key);
+static PlMapItem *pl_findItem(PlMapItem *items, int capacity, PlValue key);
 
 void pl_initMap(PlMap *map)
 {
@@ -23,12 +23,12 @@ void pl_freeMap(PlMap *map)
     pl_initMap(map);
 }
 
-bool pl_mapGet(PlMap *map, PlValue key, PlValue *value)
+bool pl_mapGet(const PlMap *map, PlValue key, PlValue *value)
 {
     if (map->count == 0)
         return false;
 
-    PlMapItem *item = pl_finditem(map->items, map->capacity, key);
+    PlMapItem *item = pl_findItem(map->items, map->capacity, key);
 
     if (item == NULL)
         return false;
@@ -48,7 +48,7 @@ bool pl_mapSet(PlMap *map, PlValue key, PlValue value)
         pl_adjustCapac(map, capacity);
     }
 
-    PlMapItem *item = pl_finditem(map->items, map->capacity, key);
+    PlMapItem *item = pl_findItem(map->items, map->capacity, key);
 
     if (item == NULL)
         return false;
@@ -62,12 +62,12 @@ bool pl_mapSet(PlMap *map, PlValue key, PlValue value)
     return isNewKey;
 }
 
-bool pl_mapDel(PlMap *map, PlValue key)
+bool pl_mapDel(const PlMap *map, PlValue key)
 {
     if (map->count == 0)
         return false;
 
-    PlMapItem *item = pl_finditem(map->items, map->capacity, key);
+    PlMapItem *item = pl_findItem(map->items, map->capacity, key);
     if (item == NULL)
         return false;
 
@@ -79,7 +79,7 @@ bool pl_mapDel(PlMap *map, PlValue key)
     return true;
 }
 
-void pl_mapAdd(PlMap *from, PlMap *to)
+void pl_mapAdd(const PlMap *from, PlMap *to)
 {
     for (int index = 0; index < from->capacity; index++)
     {
@@ -92,7 +92,7 @@ void pl_mapAdd(PlMap *from, PlMap *to)
     }
 }
 
-PlString *pl_mapFindString(PlMap *map, const char *chars, int length, uint32_t hash)
+PlString *pl_mapFindString(const PlMap *map, const char *chars, int length, uint32_t hash)
 {
     if (map->count == 0)
         return NULL;
@@ -122,7 +122,7 @@ PlString *pl_mapFindString(PlMap *map, const char *chars, int length, uint32_t h
     }
 }
 
-void pl_mapRemoveWhite(PlMap *map)
+void pl_mapRemoveWhite(const PlMap *map)
 {
     for (int index = 0; index < map->capacity; index++)
     {
@@ -140,7 +140,7 @@ void pl_mapRemoveWhite(PlMap *map)
     }
 }
 
-void pl_markMap(PlMap *map)
+void pl_markMap(const PlMap *map)
 {
     for (int index = 0; index < map->capacity; index++)
     {
@@ -174,7 +174,7 @@ static void pl_adjustCapac(PlMap *map, int capacity)
         if (PL_IS_EMPTY(item->key))
             continue;
 
-        PlMapItem *dest = pl_finditem(items, capacity, item->key);
+        PlMapItem *dest = pl_findItem(items, capacity, item->key);
         if (dest == NULL)
             continue;
         dest->key = item->key;
@@ -187,7 +187,7 @@ static void pl_adjustCapac(PlMap *map, int capacity)
     map->capacity = capacity;
 }
 
-static PlMapItem *pl_finditem(PlMapItem *items, int capacity, PlValue key)
+static PlMapItem *pl_findItem(PlMapItem *items, int capacity, PlValue key)
 {
     bool canPass = false;
     uint32_t index = pl_hashValue(key, &canPass) & (capacity - 1);

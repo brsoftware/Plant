@@ -26,17 +26,17 @@ static bool pl_builtin_toChar(int argCount, PlValue *args);
 static bool pl_builtin_toNum(int argCount, PlValue *args);
 static bool pl_builtin_toString(int argCount, PlValue *args);
 
-static bool pl_bindMethod(PlClass *cls, PlString *name);
+static bool pl_bindMethod(const PlClass *cls, const PlString *name);
 static bool pl_call(PlClosure *closure, int argCount);
 static bool pl_callValue(PlValue callee, int argCount);
 static PlSurvalue *pl_captureSurvalue(PlValue *local);
-static void pl_closeSurvalues(PlValue *last);
+static void pl_closeSurvalues(const PlValue *last);
 static void pl_concat();
 static void pl_defMethod(PlString *name);
 static void pl_defineBuiltin(const char *name, PlBuiltinFunc function);
 static PlExecResult pl_exec();
-static bool pl_invoke(PlString *name, int argCount, char errorOp);
-static bool pl_invokeFromClass(PlClass *cls, PlString *name, int argCount, char errorOp);
+static bool pl_invoke(const PlString *name, int argCount, char errorOp);
+static bool pl_invokeFromClass(const PlClass *cls, const PlString *name, int argCount, char errorOp);
 static bool pl_isFalse(PlValue value);
 static PlValue pl_peek(int distance);
 static bool pl_repeat();
@@ -131,13 +131,10 @@ PlExecResult pl_interpret(const char *source)
 
 void pl_handleSignal(int signal)
 {
-    switch (signal)
+    if (signal == SIGSEGV)
     {
-    case SIGSEGV:
         pl_runtimeError("Segmentation fault (core dumped).");
-        // exit(0);
-    default:
-        break;
+        exit(0);
     }
 }
 
@@ -495,7 +492,7 @@ static bool pl_builtin_toString(int argCount, PlValue *args)
     return false;
 }
 
-static bool pl_bindMethod(PlClass *cls, PlString *name)
+static bool pl_bindMethod(const PlClass *cls, const PlString *name)
 {
     PlValue method;
     if (!pl_hashGet(&cls->methods, name, &method))
@@ -622,7 +619,7 @@ static PlSurvalue *pl_captureSurvalue(PlValue *local)
     return created;
 }
 
-static void pl_closeSurvalues(PlValue *last)
+static void pl_closeSurvalues(const PlValue *last)
 {
     while (vm.openSurvalues != NULL && vm.openSurvalues->location >= last)
     {
@@ -2219,7 +2216,7 @@ static PlExecResult pl_exec()
 #undef BINARY_OP
 }
 
-static bool pl_invoke(PlString *name, int argCount, char errorOp)
+static bool pl_invoke(const PlString *name, int argCount, char errorOp)
 {
     PlValue receiver = pl_peek(argCount);
 
@@ -2241,7 +2238,7 @@ static bool pl_invoke(PlString *name, int argCount, char errorOp)
     return pl_invokeFromClass(instance->cls, name, argCount, errorOp);
 }
 
-static bool pl_invokeFromClass(PlClass *cls, PlString *name, int argCount, char errorOp)
+static bool pl_invokeFromClass(const PlClass *cls, const PlString *name, int argCount, char errorOp)
 {
     PlValue method;
 

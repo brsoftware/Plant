@@ -81,7 +81,7 @@ int pl_addConstant(PlSegment *segment, PlValue value)
     return segment->constants.count - 1;
 }
 
-int pl_getLine(PlSegment *segment, int instruction)
+int pl_getLine(const PlSegment *segment, int instruction)
 {
     int start = 0;
     int end = segment->lineCount - 1;

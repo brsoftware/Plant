@@ -103,7 +103,7 @@ static void pl_emitReturn();
 static PlFunction *pl_endCompiler();
 static void pl_endScope();
 static void pl_error(const char *msg);
-static void pl_errorAt(PlToken *token, const char *msg);
+static void pl_errorAt(const PlToken *token, const char *msg);
 static void pl_errorCurrent(const char *msg);
 static void pl_expr();
 static void pl_exprStmt();
@@ -114,8 +114,8 @@ static PlParseRule *pl_getRule(PlTokenType type);
 static void pl_globalResolve(bool assignable);
 static void pl_group(bool assignable);
 static void pl_initComp(PlComp *comp, PlFuncType type);
-static int pl_idenConst(PlToken *name);
-static bool pl_idenEq(PlToken *first, PlToken *second);
+static int pl_idenConst(const PlToken *name);
+static bool pl_idenEq(const PlToken *first, const PlToken *second);
 static void pl_ifStmt();
 static void pl_increment(bool assignable);
 static void pl_literal(bool assignable);
@@ -132,7 +132,7 @@ static int pl_parseVar(const char *msg);
 static void pl_patchJump(int offset);
 static uint8_t pl_peekPrev(int offset);
 static void pl_printStmt();
-static int pl_resolveLocal(PlComp *comp, PlToken *name);
+static int pl_resolveLocal(PlComp *comp, const PlToken *name);
 static int pl_resolveSurvalue(PlComp *comp, PlToken *name);
 static void pl_returnStmt();
 static void pl_sizeof(bool assignable);
@@ -623,9 +623,9 @@ static uint8_t pl_complementGet(uint8_t getCode)
         return PL_SET_SURVALUE;
     case PL_GET_SURVALUE_LONG:
         return PL_SET_SURVALUE_LONG;
+    default:
+        return getCode;
     }
-
-    return getCode;
 }
 
 static void pl_conditional(bool assignable)
@@ -1027,7 +1027,7 @@ static void pl_error(const char *msg)
     pl_errorAt(&parser.prev, msg);
 }
 
-static void pl_errorAt(PlToken *token, const char *msg)
+static void pl_errorAt(const PlToken *token, const char *msg)
 {
     if (parser.panic)
       return;
@@ -1289,12 +1289,12 @@ static void pl_initComp(PlComp *comp, PlFuncType type)
     }
 }
 
-static int pl_idenConst(PlToken *name)
+static int pl_idenConst(const PlToken *name)
 {
     return pl_makeConstant(PL_OBJECT_VALUE(pl_copyString(name->start, name->length)));
 }
 
-static bool pl_idenEq(PlToken *first, PlToken *second)
+static bool pl_idenEq(const PlToken *first, const PlToken *second)
 {
     if (first->length != second->length)
         return false;
@@ -1852,7 +1852,7 @@ static void pl_printStmt()
     pl_emit(PL_PRINT);
 }
 
-static int pl_resolveLocal(PlComp *comp, PlToken *name)
+static int pl_resolveLocal(PlComp *comp, const PlToken *name)
 {
     for (int index = comp->localCount - 1; index >= 0; index--)
     {

@@ -8,7 +8,7 @@
 
 static void pl_blackenObject(PlObject *object);
 static void pl_freeObject(PlObject *object);
-static void pl_markArray(PlValueArray *array);
+static void pl_markArray(const PlValueArray *array);
 static void pl_markRoots();
 static void pl_sweep();
 static void pl_traceRef();
@@ -49,10 +49,15 @@ void pl_markObject(PlObject *object)
     if (vm.grayCapacity < vm.grayCount + 1)
     {
         vm.grayCapacity = PL_GROW_CAPAC(vm.grayCapacity);
-        vm.grayStack = (PlObject**)realloc(vm.grayStack, sizeof(PlObject*) * vm.grayCapacity);
 
-        if (vm.grayStack == NULL)
+        void *newStack = realloc(vm.grayStack, sizeof(PlObject*) * vm.grayCapacity);
+
+        if (newStack == NULL)
+        {
             exit(1);
+        }
+
+        vm.grayStack = (PlObject**)newStack;
     }
 
     vm.grayStack[vm.grayCount++] = object;
@@ -245,7 +250,7 @@ static void pl_freeObject(PlObject *object)
     }
 }
 
-static void pl_markArray(PlValueArray *array)
+static void pl_markArray(const PlValueArray *array)
 {
     for (int index = 0; index < array->count; index++)
     {
