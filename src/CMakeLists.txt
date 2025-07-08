@@ -16,6 +16,8 @@ set(PLANT_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/plcompiler.h
     ${CMAKE_CURRENT_LIST_DIR}/PlExecRst
     ${CMAKE_CURRENT_LIST_DIR}/plexecrst.h
+    ${CMAKE_CURRENT_LIST_DIR}/PlGitHash
+    ${CMAKE_CURRENT_LIST_DIR}/plgithash.h
     ${CMAKE_CURRENT_LIST_DIR}/PlGlobals
     ${CMAKE_CURRENT_LIST_DIR}/plglobals.h
     ${CMAKE_CURRENT_LIST_DIR}/PlHash

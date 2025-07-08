@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <PlGitHash>
 #include <PlLexer>
 #include <PlVM>
 
@@ -77,7 +78,8 @@ static char* pl_readFile(const char* path)
 static void pl_repl()
 {
     printf("Plant %d.%d.%d ", PL_VERSION_MAJOR, PL_VERSION_MINOR, PL_VERSION_MICRO);
-    printf("(%s, %s) ", __DATE__, __TIME__);
+    printf("(tags/%s, ", PL_GIT_HASH);
+    printf("%s, %s) ", __DATE__, __TIME__);
     printf("[");
     printf(PL_COMPILER_NAME, PL_COMPILER_FORMAT);
     printf("] on %s\n", PL_OS);

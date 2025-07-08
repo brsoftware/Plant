@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(Plant VERSION 0.7.3 LANGUAGES C)
+project(Plant VERSION 0.7.4 LANGUAGES C)
 
 set(PLANT_OS "")
 
@@ -16,6 +16,21 @@ else ()
 endif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_LIST_DIR}/bin/${PLANT_OS}")
+
+execute_process(
+    COMMAND git log -1 --pretty=format:%h
+    OUTPUT_VARIABLE PLGITHASH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+)
+
+message(STATUS "Building Plant at git ${PLGITHASH}")
+
+configure_file(
+    ${CMAKE_CURRENT_LIST_DIR}/PL_GIT_HASH.h.in
+    ${CMAKE_CURRENT_LIST_DIR}/src/plgithash.h
+    @ONLY
+)
 
 set(PLANT_SOURCES "")
 
