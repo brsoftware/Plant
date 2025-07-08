@@ -84,7 +84,7 @@ static void pl_breakStmt();
 static void pl_call(bool assignable);
 static bool pl_check(PlTokenType type);
 static void pl_classDecl();
-static uint8_t pl_complimentGet(uint8_t getCode);
+static uint8_t pl_complementGet(uint8_t getCode);
 static void pl_conditional(bool assignable);
 static void pl_continueStmt();
 static void pl_consume(PlTokenType type, const char *msg);
@@ -314,6 +314,7 @@ static int pl_addSurvalue(PlComp *comp, uint8_t index, bool isLocal)
 
 static void pl_advance()
 {
+    parser.prev3 = parser.prev2;
     parser.prev2 = parser.prev;
     parser.prev = parser.cur;
 
@@ -1349,12 +1350,96 @@ static void pl_increment(bool assignable)
     {
     case PL_TT_MINUS_MINUS:
         pl_emit2(PL_DUPLICATE, PL_DEC_1);
-        pl_namedVar(parser.prev2, true, false, true);
+
+        if (pl_complementGet(pl_peekPrev(1)) == pl_peekPrev(1) &&
+            pl_complementGet(pl_peekPrev(3)) == pl_peekPrev(3))
+        {
+            pl_errorCurrent("Expect unqualified-id before '--' token.");
+            break;
+        }
+
+        if (parser.prev3.type == PL_TT_DOT)
+        {
+            if (pl_peekPrev(3) == PL_GET_PROPERTY)
+            {
+                uint8_t param = pl_peekPrev(2);
+
+                if (pl_peekPrev(5) == PL_GET_GLOBAL)
+                {
+                    uint8_t globalParam = pl_peekPrev(4);
+                    pl_emit2(PL_GET_GLOBAL, globalParam);
+                }
+
+                else if (pl_peekPrev(7) == PL_GET_GLOBAL_LONG)
+                {
+                    uint8_t globalParam1, globalParam2, globalParam3;
+                    globalParam1 = pl_peekPrev(6);
+                    globalParam2 = pl_peekPrev(5);
+                    globalParam3 = pl_peekPrev(4);
+                    pl_emit(PL_GET_GLOBAL_LONG);
+                    pl_emit(globalParam1);
+                    pl_emit(globalParam2);
+                    pl_emit(globalParam3);
+                }
+
+                pl_emit(PL_SWAP);
+                pl_emit(PL_SET_PROPERTY);
+                pl_emit(param);
+            }
+        }
+
+        else
+        {
+            pl_namedVar(parser.prev, assignable, false, true);
+        }
+
         pl_emit(PL_POP);
         break;
     case PL_TT_PLUS_PLUS:
         pl_emit2(PL_DUPLICATE, PL_ADD_1);
-        pl_namedVar(parser.prev2, true, false, true);
+
+        if (pl_complementGet(pl_peekPrev(1)) == pl_peekPrev(1) &&
+            pl_complementGet(pl_peekPrev(3)) == pl_peekPrev(3))
+        {
+            pl_errorCurrent("Expect unqualified-id before '++' token.");
+            break;
+        }
+
+        if (parser.prev3.type == PL_TT_DOT)
+        {
+            if (pl_peekPrev(3) == PL_GET_PROPERTY)
+            {
+                uint8_t param = pl_peekPrev(2);
+
+                if (pl_peekPrev(5) == PL_GET_GLOBAL)
+                {
+                    uint8_t globalParam = pl_peekPrev(4);
+                    pl_emit2(PL_GET_GLOBAL, globalParam);
+                }
+
+                else if (pl_peekPrev(7) == PL_GET_GLOBAL_LONG)
+                {
+                    uint8_t globalParam1, globalParam2, globalParam3;
+                    globalParam1 = pl_peekPrev(6);
+                    globalParam2 = pl_peekPrev(5);
+                    globalParam3 = pl_peekPrev(4);
+                    pl_emit(PL_GET_GLOBAL_LONG);
+                    pl_emit(globalParam1);
+                    pl_emit(globalParam2);
+                    pl_emit(globalParam3);
+                }
+
+                pl_emit(PL_SWAP);
+                pl_emit(PL_SET_PROPERTY);
+                pl_emit(param);
+            }
+        }
+
+        else
+        {
+            pl_namedVar(parser.prev, assignable, false, true);
+        }
+
         pl_emit(PL_POP);
         break;
     default:
@@ -2317,19 +2402,105 @@ static void pl_unary(bool assignable)
     case PL_TT_MINUS:
         pl_emit(PL_NEGATE);
         break;
-    case PL_TT_MINUS_MINUS:
+
+    case PL_TT_MINUS_MINUS: {
         pl_emit2(PL_DEC_1, PL_DUPLICATE);
-        pl_namedVar(parser.prev, assignable, false, true);
+
+        if (pl_complementGet(pl_peekPrev(1)) == pl_peekPrev(1) &&
+            pl_complementGet(pl_peekPrev(3)) == pl_peekPrev(3))
+        {
+            pl_errorCurrent("Expect unqualified-id after '--' token.");
+            break;
+        }
+
+        if (parser.prev2.type == PL_TT_DOT)
+        {
+            if (pl_peekPrev(3) == PL_GET_PROPERTY)
+            {
+                uint8_t param = pl_peekPrev(2);
+
+                if (pl_peekPrev(5) == PL_GET_GLOBAL)
+                {
+                    uint8_t globalParam = pl_peekPrev(4);
+                    pl_emit2(PL_GET_GLOBAL, globalParam);
+                }
+
+                else if (pl_peekPrev(7) == PL_GET_GLOBAL_LONG)
+                {
+                    uint8_t globalParam1, globalParam2, globalParam3;
+                    globalParam1 = pl_peekPrev(6);
+                    globalParam2 = pl_peekPrev(5);
+                    globalParam3 = pl_peekPrev(4);
+                    pl_emit(PL_GET_GLOBAL_LONG);
+                    pl_emit(globalParam1);
+                    pl_emit(globalParam2);
+                    pl_emit(globalParam3);
+                }
+
+                pl_emit(PL_SWAP);
+                pl_emit(PL_SET_PROPERTY);
+                pl_emit(param);
+            }
+        }
+
+        else
+        {
+            pl_namedVar(parser.prev, assignable, false, true);
+        }
+
         pl_emit(PL_POP);
         break;
+    }
+
     case PL_TT_PLUS:
         pl_emit(PL_AFFIRM);
         break;
-    case PL_TT_PLUS_PLUS:
+
+    case PL_TT_PLUS_PLUS: {
         pl_emit2(PL_ADD_1, PL_DUPLICATE);
-        pl_namedVar(parser.prev, assignable, false, true);
+
+        if (pl_complementGet(pl_peekPrev(1)) == pl_peekPrev(1) &&
+            pl_complementGet(pl_peekPrev(3)) == pl_peekPrev(3))
+        {
+            pl_errorCurrent("Expect unqualified-id after '++' token.");
+            break;
+        }
+
+        if (parser.prev2.type == PL_TT_DOT)
+        {
+            if (pl_peekPrev(3) == PL_GET_PROPERTY)
+            {
+                uint8_t param = pl_peekPrev(2);
+
+                if (pl_peekPrev(5) == PL_GET_GLOBAL)
+                {
+                    uint8_t globalParam = pl_peekPrev(4);
+                    pl_emit2(PL_GET_GLOBAL, globalParam);
+                } else if (pl_peekPrev(7) == PL_GET_GLOBAL_LONG)
+                {
+                    uint8_t globalParam1, globalParam2, globalParam3;
+                    globalParam1 = pl_peekPrev(6);
+                    globalParam2 = pl_peekPrev(5);
+                    globalParam3 = pl_peekPrev(4);
+                    pl_emit(PL_GET_GLOBAL_LONG);
+                    pl_emit(globalParam1);
+                    pl_emit(globalParam2);
+                    pl_emit(globalParam3);
+                }
+
+                pl_emit(PL_SWAP);
+                pl_emit(PL_SET_PROPERTY);
+                pl_emit(param);
+            }
+        } else
+        {
+            pl_namedVar(parser.prev, assignable, false, true);
+        }
+
         pl_emit(PL_POP);
         break;
+    }
+
     case PL_TT_TILDE:
         pl_emit(PL_BITNOT);
         break;

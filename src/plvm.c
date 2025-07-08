@@ -727,6 +727,14 @@ static PlExecResult pl_exec()
             pl_push(pl_peek(1));
             break;
 
+        case PL_SWAP: {
+            PlValue second = pl_pop();
+            PlValue first = pl_pop();
+            pl_push(second);
+            pl_push(first);
+            break;
+        }
+
         case PL_GET_LOCAL: {
             uint8_t slot = READ_BYTE();
             pl_push(frame->slots[slot]);

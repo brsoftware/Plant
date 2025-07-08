@@ -20,6 +20,8 @@ const char *pl_codeToStr(PlCode code)
         return "dup";
     case PL_DUPLICATE_PREV:
         return "dup_prev";
+    case PL_SWAP:
+        return "swap";
     case PL_GET_LOCAL:
         return "get_loc";
     case PL_SET_LOCAL:

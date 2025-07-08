@@ -11,6 +11,7 @@ typedef enum PlCode
     PL_POP,
     PL_DUPLICATE,
     PL_DUPLICATE_PREV,
+    PL_SWAP,
     PL_GET_LOCAL,
     PL_SET_LOCAL,
     PL_GET_GLOBAL,
