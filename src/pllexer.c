@@ -238,6 +238,8 @@ static PlTokenType pl_idenType()
             switch (lexer.start[1])
             {
             case 'e':
+                if (lexer.current - lexer.start > 2 && lexer.start[2] == 'l')
+                    return pl_checkKeyword(3, 3, "ete", PL_TT_DELETE);
                 return pl_checkKeyword(2, 5, "fault", PL_TT_DEFAULT);
             case 'o':
                 return pl_checkKeyword(2, 0, "o", PL_TT_DO);

@@ -112,6 +112,8 @@ const char *pl_tokToStr(PlTokenType type)
         return "continue";
     case PL_TT_DEFAULT:
         return "default";
+    case PL_TT_DELETE:
+        return "delete";
     case PL_TT_DO:
         return "do";
     case PL_TT_ELSE:

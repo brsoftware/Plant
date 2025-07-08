@@ -59,6 +59,7 @@ typedef enum PlTokenType
     PL_TT_CONST,
     PL_TT_CONTINUE,
     PL_TT_DEFAULT,
+    PL_TT_DELETE,
     PL_TT_DO,
     PL_TT_ELSE,
     PL_TT_FALSE,

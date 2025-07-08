@@ -204,6 +204,7 @@ PlParseRule rules[] = {
     [PL_TT_CONST]                 = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_CONTINUE]              = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_DEFAULT]               = {NULL,             NULL,           PL_PREC_NONE},
+    [PL_TT_DELETE]                = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_DO]                    = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_ELSE]                  = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_FALSE]                 = {pl_literal,       NULL,           PL_PREC_NONE},
