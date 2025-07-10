@@ -74,6 +74,22 @@ void pl_freeVM()
     pl_freeHash(&vm.globals);
     pl_freeHash(&vm.strings);
     vm.initString = NULL;
+    vm.addString = NULL;
+    vm.subString = NULL;
+    vm.mulString = NULL;
+    vm.divString = NULL;
+    vm.modString = NULL;
+    vm.bitandString = NULL;
+    vm.bitorString = NULL;
+    vm.bitxorString = NULL;
+    vm.bitnotString = NULL;
+    vm.negateString = NULL;
+    vm.affirmString = NULL;
+    vm.lshiftString = NULL;
+    vm.rshiftString = NULL;
+    vm.greaterString = NULL;
+    vm.lessString = NULL;
+    vm.equalString = NULL;
     pl_freeObjects();
 }
 

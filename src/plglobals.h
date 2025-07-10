@@ -11,7 +11,7 @@
 
 #define PL_VERSION_MAJOR 0
 #define PL_VERSION_MINOR 7
-#define PL_VERSION_MICRO 4
+#define PL_VERSION_MICRO 5
 
 #if defined(__GNUC__)
     #if defined(__llvm__)
