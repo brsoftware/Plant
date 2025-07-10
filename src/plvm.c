@@ -552,7 +552,11 @@ static PlExecResult pl_exec()
                         if (value < 0)
                             value += vec->items.count;
 
+#ifdef LONG_LONG_MAX
                         if (value <= (double)LONG_LONG_MAX)
+#else
+                        if (value <= (double)LLONG_MAX)
+#endif
                         {
                             if (value < vec->items.count)
                             {
@@ -620,7 +624,11 @@ static PlExecResult pl_exec()
                         if (value < 0)
                             value += str->length;
 
+#ifdef LONG_LONG_MAX
                         if (value <= (double)LONG_LONG_MAX)
+#else
+                        if (value <= (double)LLONG_MAX)
+#endif
                         {
                             if (value < str->length)
                             {
@@ -666,7 +674,11 @@ static PlExecResult pl_exec()
                         if (value < 0)
                             value += vec->items.count;
 
+#ifdef LONG_LONG_MAX
                         if (value <= (double)LONG_LONG_MAX)
+#else
+                        if (value <= (double)LLONG_MAX)
+#endif
                         {
                             if (value < vec->items.count)
                             {
@@ -742,7 +754,11 @@ static PlExecResult pl_exec()
                         if (value < 0)
                             value += str->length;
 
+#ifdef LONG_LONG_MAX
                         if (value <= (double)LONG_LONG_MAX)
+#else
+                        if (value <= (double)LLONG_MAX)
+#endif
                         {
                             if (value < str->length)
                             {
@@ -1145,7 +1161,11 @@ static PlExecResult pl_exec()
                     return PL_RST_EXCEPTION;
                 }
 
+#ifdef ULONG_LONG_MAX
                 if (times > (double)ULONG_LONG_MAX || times < 0)
+#else
+                if (times > (double)ULLONG_MAX || times < 0)
+#endif
                 {
                     pl_runtimeError("Integer overflow.");
                     return PL_RST_EXCEPTION;
@@ -2049,7 +2069,11 @@ static bool pl_repeat()
         return false;
     }
 
+#ifdef ULONG_LONG_MAX
     if (times > (double)ULONG_LONG_MAX || times < 0)
+#else
+    if (times > (double)ULONG_MAX || times < 0)
+#endif
     {
         pl_runtimeError("Integer Overflow.");
         return false;

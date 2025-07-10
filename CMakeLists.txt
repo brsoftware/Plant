@@ -41,6 +41,10 @@ add_executable(Plant
     ${PLANT_SOURCES}
 )
 
+if (${PLANT_OS} STREQUAL "linux")
+    target_link_libraries(Plant PRIVATE m)
+endif (${PLANT_OS} STREQUAL "linux")
+
 set_target_properties(Plant
     PROPERTIES OUTPUT_NAME "plant"
 )
