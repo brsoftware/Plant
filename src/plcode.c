@@ -146,6 +146,10 @@ const char *pl_codeToStr(PlCode code)
         return "map";
     case PL_SIZEOF:
         return "sizeof";
+    case PL_STD:
+        return "std";
+    case PL_STD_LONG:
+        return "std_long";
     case PL_INVALID:
         return "INVALID";
     default:

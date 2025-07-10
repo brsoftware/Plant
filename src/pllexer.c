@@ -238,9 +238,22 @@ static PlTokenType pl_idenType()
             switch (lexer.start[1])
             {
             case 'e':
-                if (lexer.current - lexer.start > 2 && lexer.start[2] == 'l')
-                    return pl_checkKeyword(3, 3, "ete", PL_TT_DELETE);
-                return pl_checkKeyword(2, 5, "fault", PL_TT_DEFAULT);
+                if (lexer.current - lexer.start > 2)
+                {
+                    switch (lexer.start[2])
+                    {
+                    case 'c':
+                        return pl_checkKeyword(3, 5, "ltype", PL_TT_DECLTYPE);
+                    case 'f':
+                        return pl_checkKeyword(3, 4, "ault", PL_TT_DEFAULT);
+                    case 'l':
+                        return pl_checkKeyword(3, 3, "ete", PL_TT_DELETE);
+                    default:
+                        break;
+                    }
+                }
+
+                break;
             case 'o':
                 return pl_checkKeyword(2, 0, "o", PL_TT_DO);
             default:
@@ -387,6 +400,8 @@ static PlTokenType pl_idenType()
             case 'i':
                 return pl_checkKeyword(2, 4, "zeof", PL_TT_SIZEOF);
             case 't':
+                if (lexer.current - lexer.start == 3 && lexer.start[2] == 'd')
+                    return PL_TT_STD;
                 return pl_checkKeyword(2, 4, "atic", PL_TT_STATIC);
             case 'u':
                 return pl_checkKeyword(2, 3, "per", PL_TT_SUPER);

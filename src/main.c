@@ -5,6 +5,7 @@
 
 #include <PlGitHash>
 #include <PlLexer>
+#include <PlStd>
 #include <PlVM>
 
 static char *pl_readFile(const char *path);
@@ -14,6 +15,7 @@ static void pl_runFile(const char *path);
 int main(int argc, const char* argv[])
 {
     pl_initVM();
+    pl_initStd();
 
     signal(SIGSEGV, pl_handleSignal);
 
@@ -35,6 +37,7 @@ int main(int argc, const char* argv[])
     }
 
     pl_freeVM();
+    pl_freeStd();
 
     return 0;
 }

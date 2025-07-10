@@ -53,6 +53,7 @@ void pl_freeVM();
 PlExecResult pl_interpret(const char *source);
 void pl_push(PlValue value);
 PlValue pl_pop();
+bool pl_isFalse(PlValue value);
 
 void pl_handleSignal(int signal);
 

@@ -110,6 +110,8 @@ const char *pl_tokToStr(PlTokenType type)
         return "const";
     case PL_TT_CONTINUE:
         return "continue";
+    case PL_TT_DECLTYPE:
+        return "decltype";
     case PL_TT_DEFAULT:
         return "default";
     case PL_TT_DELETE:
@@ -154,6 +156,8 @@ const char *pl_tokToStr(PlTokenType type)
         return "sizeof";
     case PL_TT_STATIC:
         return "static";
+    case PL_TT_STD:
+        return "std";
     case PL_TT_SUPER:
         return "super";
     case PL_TT_SWITCH:

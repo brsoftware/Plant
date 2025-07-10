@@ -136,6 +136,7 @@ static int pl_resolveLocal(PlComp *comp, const PlToken *name);
 static int pl_resolveSurvalue(PlComp *comp, PlToken *name);
 static void pl_returnStmt();
 static void pl_sizeof(bool assignable);
+static void pl_std(bool assignable);
 static void pl_stmt();
 static void pl_string(bool assignable);
 static void pl_subscript(bool assignable);
@@ -203,6 +204,7 @@ PlParseRule rules[] = {
     [PL_TT_CLASS]                 = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_CONST]                 = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_CONTINUE]              = {NULL,             NULL,           PL_PREC_NONE},
+    [PL_TT_DECLTYPE]              = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_DEFAULT]               = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_DELETE]                = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_DO]                    = {NULL,             NULL,           PL_PREC_NONE},
@@ -225,6 +227,7 @@ PlParseRule rules[] = {
     [PL_TT_RETURN]                = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_SIZEOF]                = {pl_sizeof,        NULL,           PL_PREC_NONE},
     [PL_TT_STATIC]                = {NULL,             NULL,           PL_PREC_NONE},
+    [PL_TT_STD]                   = {pl_std,           NULL,           PL_PREC_NONE},
     [PL_TT_SUPER]                 = {pl_super,         NULL,           PL_PREC_NONE},
     [PL_TT_SWITCH]                = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_THIS]                  = {pl_this,          NULL,           PL_PREC_NONE},
@@ -2011,6 +2014,66 @@ static void pl_sizeof(bool assignable)
     pl_expr();
     pl_consume(PL_TT_RIGHT_PAREN, "Expect ')' after 'sizeof'.");
     pl_emit(PL_SIZEOF);
+}
+
+static void pl_std(bool assignable)
+{
+    pl_consume(PL_TT_COLON_COLON, "Expect '::' after 'std'.");
+    pl_consume(PL_TT_IDENTIFIER, "Expect header/ builtin name after '::'.");
+    PlString *name1 = pl_copyString(parser.prev.start, parser.prev.length);
+
+    if (pl_match(PL_TT_COLON_COLON))
+    {
+        pl_consume(PL_TT_IDENTIFIER, "Expect builtin name after header.");
+        PlString *name2 = pl_copyString(parser.prev.start, parser.prev.length);
+
+        int length = name1->length + 1 + name2->length;
+        char *chars = PL_ALLOC(char, length + 1);
+        memcpy(chars, name1->chars, name1->length);
+        memcpy(chars + name1->length, ".", 1);
+        memcpy(chars + name1->length + 1, name2->chars, name2->length);
+        chars[length] = '\0';
+
+        PlString *result = pl_takeString(chars, length);
+
+        int index = pl_makeConstant(PL_OBJECT_VALUE(result));
+
+        if (index <= UINT8_MAX)
+        {
+            pl_emit2(PL_STD, index);
+        }
+
+        else
+        {
+            pl_emit(PL_STD_LONG);
+            pl_emit((uint8_t)(index & 0xff));
+            pl_emit((uint8_t)((index >> 8) & 0xff));
+            pl_emit((uint8_t)((index >> 16) & 0xff));
+        }
+
+        return;
+    }
+
+    if (pl_match(PL_TT_DOT))
+    {
+        pl_errorCurrent("You should use '::' instead of '.' to access headers in 'std'.");
+        return;
+    }
+
+    int index = pl_makeConstant(PL_OBJECT_VALUE(name1));
+
+    if (index <= UINT8_MAX)
+    {
+        pl_emit2(PL_STD, index);
+    }
+
+    else
+    {
+        pl_emit(PL_STD_LONG);
+        pl_emit((uint8_t)(index & 0xff));
+        pl_emit((uint8_t)((index >> 8) & 0xff));
+        pl_emit((uint8_t)((index >> 16) & 0xff));
+    }
 }
 
 static void pl_stmt()

@@ -75,6 +75,8 @@ typedef enum PlCode
     PL_VECTOR,
     PL_MAP,
     PL_SIZEOF,
+    PL_STD,
+    PL_STD_LONG,
     PL_INVALID = 255
 } PlCode;
 
