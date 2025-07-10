@@ -45,6 +45,12 @@ set_target_properties(Plant
     PROPERTIES OUTPUT_NAME "plant"
 )
 
+if (${PLANT_OS} STREQUAL "darwin")
+    set_target_properties(Plant
+        PROPERTIES OUTPUT_NAME "plant-darwin"
+    )
+endif (${PLANT_OS} STREQUAL "darwin")
+
 include(GNUInstallDirs)
 install(TARGETS Plant
     BUNDLE DESTINATION .
