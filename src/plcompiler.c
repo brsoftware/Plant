@@ -465,9 +465,9 @@ static void pl_bracket(bool assignable)
 
             initSize++;
 
-            if (initSize > 255)
+            if (initSize > 16383)
             {
-                pl_errorCurrent("Can't have more than 255 items.");
+                pl_errorCurrent("Can't have more than 16383 items.");
             }
 
             pl_expr();
@@ -475,7 +475,19 @@ static void pl_bracket(bool assignable)
     }
 
     pl_consume(PL_TT_RIGHT_BRACKET, "Expect ']' after vector.");
-    pl_emit2(PL_VECTOR, initSize);
+
+    if (initSize <= 255)
+    {
+        pl_emit2(PL_VECTOR, initSize);
+    }
+
+    else
+    {
+        pl_emit(PL_VECTOR_LONG);
+        pl_emit((uint8_t)(initSize & 0xff));
+        pl_emit((uint8_t)((initSize >> 8) & 0xff));
+        pl_emit((uint8_t)((initSize >> 16) & 0xff));
+    }
 }
 
 static void pl_breakStmt()
@@ -1398,6 +1410,7 @@ static void pl_increment(bool assignable)
 
         pl_emit(PL_POP);
         break;
+
     case PL_TT_PLUS_PLUS:
         pl_emit2(PL_DUPLICATE, PL_ADD_1);
 
@@ -1494,9 +1507,9 @@ static void pl_map(bool assignable)
 
             initSize++;
 
-            if (initSize > 255)
+            if (initSize > 16383)
             {
-                pl_errorCurrent("Can't have more than 255 pairs.");
+                pl_errorCurrent("Can't have more than 16383 pairs.");
             }
 
             pl_expr();
@@ -1506,7 +1519,19 @@ static void pl_map(bool assignable)
     }
 
     pl_consume(PL_TT_RIGHT_BRACE, "Expect '}' after map.");
-    pl_emit2(PL_MAP, initSize);
+
+    if (initSize <= 255)
+    {
+        pl_emit2(PL_MAP, initSize);
+    }
+
+    else
+    {
+        pl_emit(PL_MAP_LONG);
+        pl_emit((uint8_t)(initSize & 0xff));
+        pl_emit((uint8_t)((initSize >> 8) & 0xff));
+        pl_emit((uint8_t)((initSize >> 16) & 0xff));
+    }
 }
 
 static void pl_markInit()
@@ -2555,7 +2580,9 @@ static void pl_unary(bool assignable)
                 pl_emit(PL_SET_PROPERTY);
                 pl_emit(param);
             }
-        } else
+        }
+
+        else
         {
             pl_namedVar(parser.prev, assignable, false, true);
         }

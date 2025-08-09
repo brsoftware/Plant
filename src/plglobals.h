@@ -10,8 +10,8 @@
 #define UINT8_COUNT (UINT8_MAX + 1)
 
 #define PL_VERSION_MAJOR 0
-#define PL_VERSION_MINOR 7
-#define PL_VERSION_MICRO 5
+#define PL_VERSION_MINOR 8
+#define PL_VERSION_MICRO 0
 
 #if defined(__GNUC__)
     #if defined(__llvm__)

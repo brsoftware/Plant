@@ -142,8 +142,12 @@ const char *pl_codeToStr(PlCode code)
         return "met_long";
     case PL_VECTOR:
         return "vec";
+    case PL_VECTOR_LONG:
+        return "vec_long";
     case PL_MAP:
         return "map";
+    case PL_MAP_LONG:
+        return "map_long";
     case PL_SIZEOF:
         return "sizeof";
     case PL_STD:

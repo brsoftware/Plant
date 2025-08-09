@@ -350,11 +350,11 @@ static void pl_defineBuiltin(const char *name, PlBuiltinFunc function)
 
 static PlExecResult pl_exec()
 {
-  PlCallFrame *frame = &vm.frames[vm.frameCount - 1];
+    PlCallFrame *frame = &vm.frames[vm.frameCount - 1];
 
 #define READ_BYTE() (*frame->ip++)
 #define READ_SHORT() (frame->ip += 2, (uint16_t)((frame->ip[-2] << 8) | frame->ip[-1]))
-#define READ_LONG_BYTE() ((READ_BYTE()) | ((READ_BYTE() << 8) & 0xff) | ((READ_BYTE() << 16) & 0xff))
+#define READ_LONG_BYTE() ((READ_BYTE()) | (READ_BYTE() << 8) | (READ_BYTE() << 16))
 #define READ_CONSTANT() (frame->closure->function->segment.constants.values[READ_BYTE()])
 #define READ_LONG_CONSTANT() (frame->closure->function->segment.constants.values[READ_LONG_BYTE()])
 #define READ_STRING() PL_AS_STRING(READ_CONSTANT())
@@ -1855,9 +1855,48 @@ static PlExecResult pl_exec()
             break;
         }
 
+        case PL_VECTOR_LONG: {
+            PlVector *vector = pl_newVector();
+            PlValueArray *array = &vector->items;
+            int size = READ_LONG_BYTE();
+
+            printf("size: %d\n", size);
+
+            for (int index = 0; index < size; index++)
+            {
+                pl_writeValueArray(array, pl_pop());
+            }
+
+            pl_reverseValueArray(array);
+            pl_push(PL_OBJECT_VALUE(vector));
+            break;
+        }
+
         case PL_MAP: {
             PlMapping *map = pl_newMapping();
             uint8_t size = READ_BYTE();
+
+            for (int index = 0; index < size; index++)
+            {
+                PlValue value = pl_pop();
+                PlValue key = pl_pop();
+
+                if (!pl_hashable(key))
+                {
+                    pl_runtimeError("Unhashable key.");
+                    return PL_RST_EXCEPTION;
+                }
+
+                pl_mapSet(&map->map, key, value);
+            }
+
+            pl_push(PL_OBJECT_VALUE(map));
+            break;
+        }
+
+        case PL_MAP_LONG: {
+            PlMapping *map = pl_newMapping();
+            int size = READ_LONG_BYTE();
 
             for (int index = 0; index < size; index++)
             {
