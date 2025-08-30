@@ -32,6 +32,8 @@ const char *pl_codeToStr(PlCode code)
         return "set_gbl";
     case PL_DEFINE_GLOBAL:
         return "def_gbl";
+    case PL_DELETE_GLOBAL:
+        return "del_gbl";
     case PL_GET_SURVALUE:
         return "get_svl";
     case PL_SET_SURVALUE:
@@ -54,6 +56,8 @@ const char *pl_codeToStr(PlCode code)
         return "get_gbl_long";
     case PL_DEFINE_GLOBAL_LONG:
         return "def_gbl_long";
+    case PL_DELETE_GLOBAL_LONG:
+        return "del_gbl_long";
     case PL_SET_GLOBAL_LONG:
         return "set_gbl_long";
     case PL_GET_SURVALUE_LONG:

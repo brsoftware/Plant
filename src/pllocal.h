@@ -4,11 +4,17 @@
 #include <PlGlobals>
 #include <PlToken>
 
+typedef enum PlLocalAttr
+{
+    PL_LOCAL_CAPTURED = 0x1,
+    PL_LOCAL_DELETED = 0x2
+} PlLocalAttr;
+
 typedef struct PlLocal
 {
     PlToken name;
     int depth;
-    bool captured;
+    uint8_t attr;
 } PlLocal;
 
 #endif // PLLOCAL_H

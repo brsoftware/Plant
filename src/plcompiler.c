@@ -92,6 +92,7 @@ static PlSegment *pl_curSeg();
 static void pl_decl();
 static void pl_declVar();
 static void pl_defVar(int global);
+static void pl_deleteStmt();
 static void pl_doStmt();
 static void pl_dot(bool assignable);
 static void pl_emit(uint8_t byte);
@@ -287,7 +288,7 @@ static void pl_addLocal(PlToken name)
     PlLocal *local = &cur->locals[cur->localCount++];
     local->name = name;
     local->depth = -1;
-    local->captured = false;
+    local->attr &= ~PL_LOCAL_CAPTURED;
 }
 
 static int pl_addSurvalue(PlComp *comp, uint8_t index, bool isLocal)
@@ -765,6 +766,44 @@ static void pl_defVar(int global)
     }
 }
 
+static void pl_deleteStmt()
+{
+    pl_consume(PL_TT_IDENTIFIER, "Expect an identifier.");
+
+    int local = pl_resolveLocal(cur, &parser.prev);
+    int survalue;
+
+    if (local != -1)
+    {
+        cur->locals[local].attr |= PL_LOCAL_DELETED;
+    }
+
+    else if ((survalue = pl_resolveSurvalue(cur, &parser.prev)) != -1)
+    {
+        pl_errorCurrent("Cannot delete a survalue.");
+    }
+
+    else
+    {
+        int index = pl_idenConst(&parser.prev);
+
+        if (index <= 255)
+        {
+            pl_emit2(PL_DELETE_GLOBAL, index);
+        }
+
+        else
+        {
+            pl_emit(PL_DELETE_GLOBAL_LONG);
+            pl_emit((uint8_t)(index & 0xff));
+            pl_emit((uint8_t)((index >> 8) & 0xff));
+            pl_emit((uint8_t)((index >> 16) & 0xff));
+        }
+    }
+
+    pl_consume(PL_TT_SEMICOLON, "Expect ';' after the delete statement.");
+}
+
 static void pl_doStmt()
 {
     PlBreaks *surroundingBreak = curBreak;
@@ -1025,7 +1064,7 @@ static void pl_endScope()
 
     while (cur->localCount > 0 && cur->locals[cur->localCount - 1].depth > cur->scopeDepth)
     {
-        if (cur->locals[cur->localCount - 1].captured)
+        if (cur->locals[cur->localCount - 1].attr & PL_LOCAL_CAPTURED)
         {
             pl_emit(PL_CLOSE_SURVALUE);
         }
@@ -1291,7 +1330,7 @@ static void pl_initComp(PlComp *comp, PlFuncType type)
 
     PlLocal *local = &cur->locals[cur->localCount++];
     local->depth = 0;
-    local->captured = false;
+    local->attr |= PL_LOCAL_CAPTURED;
 
     if (type != PL_FUNCTYPE_FUNC && type != PL_FUNCTYPE_LAMBDA)
     {
@@ -1830,6 +1869,16 @@ static bool pl_namedVar(PlToken name, bool assignable, bool forceGlobal, bool fo
         }
     }
 
+
+    if (getOp == PL_GET_LOCAL)
+    {
+        if ((cur->locals[arg].attr & PL_LOCAL_DELETED) && !setVar && !forceGlobal)
+        {
+            pl_errorCurrent("Accessing a deleted local variable.");
+            return false;
+        }
+    }
+
     if (limit512 && arg > 512)
     {
         pl_error("Too many local variables, maximum 512 allowed.");
@@ -1994,7 +2043,7 @@ static int pl_resolveSurvalue(PlComp *comp, PlToken *name)
 
     if (local != -1)
     {
-        comp->parent->locals[local].captured = true;
+        comp->parent->locals[local].attr |= PL_LOCAL_CAPTURED;
         return pl_addSurvalue(comp, (uint8_t)local, true);
     }
 
@@ -2121,6 +2170,11 @@ static void pl_stmt()
     else if (pl_match(PL_TT_CONTINUE))
     {
         pl_continueStmt();
+    }
+
+    else if (pl_match(PL_TT_DELETE))
+    {
+        pl_deleteStmt();
     }
 
     else if (pl_match(PL_TT_DO))

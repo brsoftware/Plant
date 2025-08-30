@@ -450,6 +450,18 @@ static PlExecResult pl_exec()
             break;
         }
 
+        case PL_DELETE_GLOBAL: {
+            PlString *name = READ_STRING();
+
+            if (!pl_hashDel(&vm.globals, name))
+            {
+                pl_runtimeError("Cannot delete global variable '&s'.", name->chars);
+                return PL_RST_EXCEPTION;
+            }
+
+            break;
+        }
+
         case PL_SET_GLOBAL: {
             PlString *name = READ_STRING();
 
