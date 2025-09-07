@@ -455,7 +455,7 @@ static PlExecResult pl_exec()
 
             if (!pl_hashDel(&vm.globals, name))
             {
-                pl_runtimeError("Cannot delete global variable '&s'.", name->chars);
+                pl_runtimeError("Cannot delete global variable '%s'.", name->chars);
                 return PL_RST_EXCEPTION;
             }
 

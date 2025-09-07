@@ -57,6 +57,9 @@ set(PLANT_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/PlStd
     ${CMAKE_CURRENT_LIST_DIR}/plstd.c
     ${CMAKE_CURRENT_LIST_DIR}/plstd.h
+    ${CMAKE_CURRENT_LIST_DIR}/PlSupplementary
+    ${CMAKE_CURRENT_LIST_DIR}/plsupplementary.c
+    ${CMAKE_CURRENT_LIST_DIR}/plsupplementary.h
     ${CMAKE_CURRENT_LIST_DIR}/PlSurval
     ${CMAKE_CURRENT_LIST_DIR}/plsurval.h
     ${CMAKE_CURRENT_LIST_DIR}/PlToken
