@@ -26,8 +26,8 @@ To be specific, here's a list of to-do's:
 * Friendships: go and search a C++ book and find out more ;)
 * Enumerations: `enum Name {...}` and `enum class Name {...}`
 * Final classes: a class which could not be inherited: `class A final {...}`
-* Constant variables: `const var a` or `var const a`
-* Deletations: `del a`, `del a.b`, `del a[b]` etc.
+* Constant variables: `const var a` or `var const a` => implemented :)
+* Deletations: `delete a`, `delete a.b`, `delete a[b]` etc. => implemented :)
 * Import and export: `import module` imports a file named `module.plant` around. This is expected to be similar to Lua's `dofile(...)` instead of Python or C++ (20)'s `import`.
 * `try` `catch` `noexcept` `finally`: you could infer that...
 * Default arguments: if we got, say, `func a(b = 3){print b;}`, calling `a()` prints `3` while `a(42)` prints `42`.
@@ -151,6 +151,8 @@ var
 while
 ```
 
+> Added circa version 0.8.0: a holistic keyword list is now presented as follows: `and, break, case, catch, class, const, continue, decltype, default, delete, do, else, false, final, finally, for, func, if, nobreak, noexcept, null, or, operator, print, private, protected, public, return, sizeof, static, std, super, switch, this, throw, true, try, var, while`
+
 Those are known as *keywords* or *reserved words*, i.e. words with special meaning. Using them will raise a syntax error.
 
 #### Strings
@@ -228,6 +230,40 @@ var a;
 print a;  // null
 var a = 3;
 print a;  // 3
+```
+
+### Constants declarations
+Use one of the following forms to declare a constant with name `iden` and initial value `value`:
+
+```
+const iden = value;
+var const iden = value;
+const var iden = value;
+var const var iden = value;
+```
+
+A constant could not be modified or overwritten. However, they could be redefined by a definition of a variable:
+
+```
+const a = 42;
+// a = 99 // Error!
+print a;  // outputs 42
+var a = 43;  // Doesn't have to be the original value
+// of course, you could do "var a = a" where
+// the first "a" is the new identifier and the second "a" points to the
+// original constant
+print a = 99; // outputs 99
+print a += 1; // outputs 100, because 100 == 99 + 1
+```
+
+### Deletions of variables
+You could delete a variable or constant if you do not want to use them anymore, by using the syntax `delete iden;`.
+
+```
+var x = 10;
+print x;  // outputs 10
+delete x;
+// print x;  // error
 ```
 
 ### Expressions
