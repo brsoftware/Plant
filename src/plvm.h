@@ -15,6 +15,7 @@ typedef struct PlVM
     PlValue stack[PL_STACK_MAX];
     PlValue *stackTop;
     PlHash globals;
+    PlHash constants;
     PlHash strings;
 
     PlString *initString;

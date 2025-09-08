@@ -87,10 +87,12 @@ static void pl_classDecl();
 static uint8_t pl_complementGet(uint8_t getCode);
 static void pl_conditional(bool assignable);
 static void pl_continueStmt();
+static void pl_constDecl();
 static void pl_consume(PlTokenType type, const char *msg);
 static PlSegment *pl_curSeg();
 static void pl_decl();
 static void pl_declVar();
+static void pl_defConst(int global);
 static void pl_defVar(int global);
 static void pl_deleteStmt();
 static void pl_doStmt();
@@ -122,7 +124,7 @@ static void pl_increment(bool assignable);
 static void pl_literal(bool assignable);
 static int pl_makeConstant(PlValue value);
 static void pl_map(bool assignable);
-static void pl_markInit();
+static void pl_markInit(bool isConst);
 static bool pl_match(PlTokenType type);
 static void pl_method(bool op);
 static bool pl_namedVar(PlToken name, bool assignable, bool forceGlobal, bool forceAssign);
@@ -659,6 +661,16 @@ static void pl_conditional(bool assignable)
     pl_patchJump(thenEndJump);
 }
 
+static void pl_constDecl()
+{
+    pl_match(PL_TT_VAR);
+    int global = pl_parseVar("Expect constant name.");
+    pl_consume(PL_TT_EQUAL, "Expect '=' after constant name; constant declaration does not allow implicit null.");
+    pl_expr();
+    pl_consume(PL_TT_SEMICOLON, "Expect ';' after constant declaration.");
+    pl_defConst(global);
+}
+
 static void pl_continueStmt()
 {
     if (innermostLoopStart == -1)
@@ -710,6 +722,11 @@ static void pl_decl()
         pl_varDecl();
     }
 
+    else if (pl_match(PL_TT_CONST))
+    {
+        pl_constDecl();
+    }
+
     else
     {
         pl_stmt();
@@ -744,11 +761,33 @@ static void pl_declVar()
     pl_addLocal(*name);
 }
 
+static void pl_defConst(int global)
+{
+    if (cur->scopeDepth > 0)
+    {
+        pl_markInit(true);
+        return;
+    }
+
+    if (global <= UINT8_MAX)
+    {
+        pl_emit2(PL_DEFINE_GLOBAL_CONST, global);
+    }
+
+    else
+    {
+        pl_emit(PL_DEFINE_GLOBAL_CONST_LONG);
+        pl_emit((uint8_t)(global & 0xff));
+        pl_emit((uint8_t)((global >> 8) & 0xff));
+        pl_emit((uint8_t)((global >> 16) & 0xff));
+    }
+}
+
 static void pl_defVar(int global)
 {
     if (cur->scopeDepth > 0)
     {
-        pl_markInit();
+        pl_markInit(false);
         return;
     }
 
@@ -1229,7 +1268,7 @@ static void pl_forStmt()
 static void pl_funcDecl()
 {
     uint8_t global = pl_parseVar("Expect function name.");
-    pl_markInit();
+    pl_markInit(false);
     pl_function(PL_FUNCTYPE_FUNC);
     pl_defVar(global);
 }
@@ -1573,11 +1612,14 @@ static void pl_map(bool assignable)
     }
 }
 
-static void pl_markInit()
+static void pl_markInit(bool isConst)
 {
     if (cur->scopeDepth == 0)
         return;
     cur->locals[cur->localCount - 1].depth = cur->scopeDepth;
+
+    if (isConst)
+        cur->locals[cur->localCount - 1].attr |= PL_LOCAL_CONSTANT;
 }
 
 static bool pl_match(PlTokenType type)
@@ -1875,6 +1917,12 @@ static bool pl_namedVar(PlToken name, bool assignable, bool forceGlobal, bool fo
         if ((cur->locals[arg].attr & PL_LOCAL_DELETED) && !setVar && !forceGlobal)
         {
             pl_errorCurrent("Accessing a deleted local variable.");
+            return false;
+        }
+
+        if ((cur->locals[arg].attr & PL_LOCAL_CONSTANT) && setVar)
+        {
+            pl_errorCurrent("Attempting to set a local constant.");
             return false;
         }
     }
@@ -2660,7 +2708,13 @@ static void pl_var(bool assignable)
 
 static void pl_varDecl()
 {
-    uint8_t global = pl_parseVar("Expect variable name.");
+    if (pl_match(PL_TT_CONST))
+    {
+        pl_constDecl();
+        return;
+    }
+
+    int global = pl_parseVar("Expect variable name.");
 
     if (pl_match(PL_TT_EQUAL))
     {

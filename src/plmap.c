@@ -79,6 +79,21 @@ bool pl_mapDel(const PlMap *map, PlValue key)
     return true;
 }
 
+bool pl_mapHas(const PlMap *map, PlValue key)
+{
+    if (map->count == 0)
+        return false;
+
+    PlMapItem *item = pl_findItem(map->items, map->capacity, key);
+    if (item == NULL)
+        return false;
+
+    if (PL_IS_EMPTY(item->key))
+        return false;
+
+    return true;
+}
+
 void pl_mapAdd(const PlMap *from, PlMap *to)
 {
     for (int index = 0; index < from->capacity; index++)

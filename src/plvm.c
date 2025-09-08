@@ -45,6 +45,7 @@ void pl_initVM()
     vm.markValue = true;
 
     pl_initHash(&vm.globals);
+    pl_initHash(&vm.constants);
     pl_initHash(&vm.strings);
 
     vm.initString = pl_copyString("init", 4);
@@ -72,6 +73,7 @@ void pl_initVM()
 void pl_freeVM()
 {
     pl_freeHash(&vm.globals);
+    pl_freeHash(&vm.constants);
     pl_freeHash(&vm.strings);
     vm.initString = NULL;
     vm.addString = NULL;
@@ -433,7 +435,7 @@ static PlExecResult pl_exec()
             PlString *name = READ_STRING();
             PlValue value;
 
-            if (!pl_hashGet(&vm.globals, name, &value))
+            if (!pl_hashGet(&vm.globals, name, &value) && !pl_hashGet(&vm.constants, name, &value))
             {
                 pl_runtimeError("'%s' was not declared in the global scope.", name->chars);
                 return PL_RST_EXCEPTION;
@@ -445,7 +447,16 @@ static PlExecResult pl_exec()
 
         case PL_DEFINE_GLOBAL: {
             PlString *name = READ_STRING();
+            pl_hashDel(&vm.constants, name);
             pl_hashSet(&vm.globals, name, pl_peek(0));
+            pl_pop();
+            break;
+        }
+
+        case PL_DEFINE_GLOBAL_CONST: {
+            PlString *name = READ_STRING();
+            pl_hashDel(&vm.globals, name);
+            pl_hashSet(&vm.constants, name, pl_peek(0));
             pl_pop();
             break;
         }
@@ -453,7 +464,7 @@ static PlExecResult pl_exec()
         case PL_DELETE_GLOBAL: {
             PlString *name = READ_STRING();
 
-            if (!pl_hashDel(&vm.globals, name))
+            if (!pl_hashDel(&vm.globals, name) && !pl_hashDel(&vm.constants, name))
             {
                 pl_runtimeError("Cannot delete global variable '%s'.", name->chars);
                 return PL_RST_EXCEPTION;
@@ -464,6 +475,12 @@ static PlExecResult pl_exec()
 
         case PL_SET_GLOBAL: {
             PlString *name = READ_STRING();
+
+            if (pl_hashHas(&vm.constants, name))
+            {
+                pl_runtimeError("Constant '%s' could not be set.", name->chars);
+                return PL_RST_EXCEPTION;
+            }
 
             if (pl_hashSet(&vm.globals, name, pl_peek(0)))
             {
@@ -814,7 +831,7 @@ static PlExecResult pl_exec()
             PlString *name = READ_LONG_STRING();
             PlValue value;
 
-            if (!pl_hashGet(&vm.globals, name, &value))
+            if (!pl_hashGet(&vm.globals, name, &value) && !pl_hashGet(&vm.constants, name, &value))
             {
                 pl_runtimeError("'%s' was not declared in the global scope.", name->chars);
                 return PL_RST_EXCEPTION;
@@ -826,13 +843,28 @@ static PlExecResult pl_exec()
 
         case PL_DEFINE_GLOBAL_LONG: {
             PlString *name = READ_LONG_STRING();
+            pl_hashDel(&vm.constants, name);
             pl_hashSet(&vm.globals, name, pl_peek(0));
+            pl_pop();
+            break;
+        }
+
+        case PL_DEFINE_GLOBAL_CONST_LONG: {
+            PlString *name = READ_LONG_STRING();
+            pl_hashDel(&vm.globals, name);
+            pl_hashSet(&vm.constants, name, pl_peek(0));
             pl_pop();
             break;
         }
 
         case PL_SET_GLOBAL_LONG: {
             PlString *name = READ_LONG_STRING();
+
+            if (pl_hashHas(&vm.constants, name))
+            {
+                pl_runtimeError("Constant '%s' could not be set.", name->chars);
+                return PL_RST_EXCEPTION;
+            }
 
             if (pl_hashSet(&vm.globals, name, pl_peek(0)))
             {

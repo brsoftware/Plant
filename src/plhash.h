@@ -15,6 +15,7 @@ void pl_freeHash(PlHash *hash);
 bool pl_hashGet(const PlHash *hash, const PlString *key, PlValue *value);
 bool pl_hashSet(PlHash *hash, PlString *key, PlValue value);
 bool pl_hashDel(const PlHash *hash, const PlString *key);
+bool pl_hashHas(const PlHash *hash, const PlString *key);
 void pl_hashAdd(const PlHash *from, PlHash *to);
 PlString *pl_hashFindString(const PlHash *table, const char *chars, int length, uint32_t hash);
 

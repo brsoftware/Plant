@@ -7,7 +7,8 @@
 typedef enum PlLocalAttr
 {
     PL_LOCAL_CAPTURED = 0x1,
-    PL_LOCAL_DELETED = 0x2
+    PL_LOCAL_DELETED = 0x2,
+    PL_LOCAL_CONSTANT = 0x4
 } PlLocalAttr;
 
 typedef struct PlLocal

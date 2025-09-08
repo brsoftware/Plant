@@ -67,6 +67,18 @@ bool pl_hashDel(const PlHash *hash, const PlString *key)
     return true;
 }
 
+bool pl_hashHas(const PlHash *hash, const PlString *key)
+{
+    if (hash->count == 0)
+        return false;
+
+    PlHashEntry *entry = pl_findEntry(hash->entries, hash->capacity, key);
+    if (entry->key == NULL)
+        return false;
+
+    return true;
+}
+
 void pl_hashAdd(const PlHash *from, PlHash *to)
 {
     for (int index = 0; index < from->capacity; index++)
