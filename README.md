@@ -21,7 +21,7 @@ To be specific, here's a list of to-do's:
 
 * Class access specifiers: `private`, `public`, `protected`
 * Static members/ methods: accessed by `a::b`
-* Multiple inheritance: allowing `class A : B, C` without keywords like `mixin` or `extends`, etc.
+* Multiple inheritance: allowing `class A : B, C` without keywords like `mixin` or `extends`, etc. => implemented :)
 * Inheritance access: controlling which could step into the methods of which: `class A : public B`
 * Friendships: go and search a C++ book and find out more ;)
 * Enumerations: `enum Name {...}` and `enum class Name {...}`

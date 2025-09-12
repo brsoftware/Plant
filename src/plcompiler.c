@@ -566,21 +566,35 @@ static void pl_classDecl(bool isFinal)
 
     if (pl_match(PL_TT_COLON))
     {
-        pl_consume(PL_TT_IDENTIFIER, "Expect superclass name.");
-        pl_var(false);
+        bool hasMixin = false;
 
-        if (pl_idenEq(&className, &parser.prev))
+        do
         {
-            pl_error("A class can't inherit from itself.");
-        }
+            if (pl_check(PL_TT_LEFT_BRACE) || pl_check(PL_TT_SEMICOLON))
+                break;
 
-        pl_beginScope();
-        pl_addLocal(pl_synthToken("super"));
-        pl_defVar(0);
+            if (classCompiler.hasSuper)
+                hasMixin = true;
 
-        pl_namedVar(className, false, false, false);
-        pl_emit(PL_INHERIT);
-        classCompiler.hasSuper = true;
+            pl_consume(PL_TT_IDENTIFIER, "Expect superclass name.");
+            pl_var(false);
+
+            if (pl_idenEq(&className, &parser.prev))
+            {
+                pl_error("A class can't inherit from itself.");
+            }
+
+            if (!hasMixin)
+            {
+                pl_beginScope();
+                pl_addLocal(pl_synthToken("super"));
+                pl_defVar(0);
+            }
+
+            pl_namedVar(className, false, false, false);
+            pl_emit(PL_INHERIT);
+            classCompiler.hasSuper = true;
+        } while (pl_match(PL_TT_COMMA));
     }
 
     pl_namedVar(className, false, false, false);

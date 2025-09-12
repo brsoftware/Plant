@@ -1815,7 +1815,7 @@ static PlExecResult pl_exec()
 
             if (supercls->isFinal)
             {
-                pl_runtimeError("Cannot inherit class marked with 'final'.");
+                pl_runtimeError("Cannot inherit class '%s' marked with 'final'.", supercls->name->chars);
                 return PL_RST_EXCEPTION;
             }
 
