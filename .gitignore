@@ -12,5 +12,11 @@ CMakeLists.txt.user
 # We don't do macOS .DS_STORE files here.
 .DS_STORE
 
+# This is a special entry that we need to ignore the src/plgithash.h
+# to make porting to other platforms via `git pull origin main` easier
+# and to make CMake work for us by dynamically creating this file
+# each time
+src/plgithash.h
+
 # We don't ignore other files because they are indispensable to build.
 # We don't ignore ourselves. (Sorry for being psychologically deep)
