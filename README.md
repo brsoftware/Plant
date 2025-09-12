@@ -31,6 +31,7 @@ To be specific, here's a list of to-do's:
 * Deletations: `delete a`, `delete a.b`, `delete a[b]` etc. => implemented :)
    - Note: only implemented `delete a` as for version 0.8.1
 * Import and export: `import module` imports a file named `module.plant` around. This is expected to be similar to Lua's `dofile(...)` instead of Python or C++ (20)'s `import`.
+   - Changed in version 0.8.1: after a thorough and prudent consideration we decided to implement the module import feature with Plant characteristics and feature with adequate allusion to multiple programming languages in maybe version 0.9.x or 0.10.x
 * `try` `catch` `noexcept` `finally`: you could infer that...
 * Default arguments: if we got, say, `func a(b = 3){print b;}`, calling `a()` prints `3` while `a(42)` prints `42`.
 * Type annotations: personally I don't like TypeScript's `a: int` thing, and so I will figure out a way to implement `int a`, and for return values we will get `int a(str b)` instead of `func a(b: str) -> int`... Well, as in Python, this is ignored by the interpreter.
