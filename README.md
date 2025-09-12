@@ -25,9 +25,11 @@ To be specific, here's a list of to-do's:
 * Inheritance access: controlling which could step into the methods of which: `class A : public B`
 * Friendships: go and search a C++ book and find out more ;)
 * Enumerations: `enum Name {...}` and `enum class Name {...}`
-* Final classes: a class which could not be inherited: `class A final {...}`
+* Final classes: a class which could not be inherited: `class A final {...}` => implemented :)
+   - Changed in version 0.8.1: we decided to go `final class A` instead of the above order to match with C++ syntax.
 * Constant variables: `const var a` or `var const a` => implemented :)
 * Deletations: `delete a`, `delete a.b`, `delete a[b]` etc. => implemented :)
+   - Note: only implemented `delete a` as for version 0.8.1
 * Import and export: `import module` imports a file named `module.plant` around. This is expected to be similar to Lua's `dofile(...)` instead of Python or C++ (20)'s `import`.
 * `try` `catch` `noexcept` `finally`: you could infer that...
 * Default arguments: if we got, say, `func a(b = 3){print b;}`, calling `a()` prints `3` while `a(42)` prints `42`.

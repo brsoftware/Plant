@@ -96,6 +96,7 @@ typedef struct PlClass
     PlObject obj;
     PlString *name;
     PlValue initializer;
+    bool isFinal;
     PlHash methods;
 } PlClass;
 

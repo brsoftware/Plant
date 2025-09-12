@@ -83,7 +83,7 @@ static void pl_bracket(bool assignable);
 static void pl_breakStmt();
 static void pl_call(bool assignable);
 static bool pl_check(PlTokenType type);
-static void pl_classDecl();
+static void pl_classDecl(bool isFinal);
 static uint8_t pl_complementGet(uint8_t getCode);
 static void pl_conditional(bool assignable);
 static void pl_continueStmt();
@@ -110,6 +110,7 @@ static void pl_errorAt(const PlToken *token, const char *msg);
 static void pl_errorCurrent(const char *msg);
 static void pl_expr();
 static void pl_exprStmt();
+static void pl_finalDecl();
 static void pl_forStmt();
 static void pl_funcDecl();
 static PlFunction *pl_function(PlFuncType type);
@@ -534,7 +535,7 @@ static bool pl_check(PlTokenType type)
   return parser.cur.type == type;
 }
 
-static void pl_classDecl()
+static void pl_classDecl(bool isFinal)
 {
     pl_consume(PL_TT_IDENTIFIER, "Expect class name.");
     PlToken className = parser.prev;
@@ -553,6 +554,8 @@ static void pl_classDecl()
         pl_emit((uint8_t)((nameConstant >> 8) & 0xff));
         pl_emit((uint8_t)((nameConstant >> 16) & 0xff));
     }
+
+    pl_emit(isFinal);
 
     pl_defVar(nameConstant);
 
@@ -709,7 +712,12 @@ static void pl_decl()
 {
     if (pl_match(PL_TT_CLASS))
     {
-        pl_classDecl();
+        pl_classDecl(false);
+    }
+
+    else if (pl_match(PL_TT_FINAL))
+    {
+        pl_finalDecl();
     }
 
     else if (pl_match(PL_TT_FUNC))
@@ -1164,6 +1172,17 @@ static void pl_exprStmt()
     pl_expr();
     pl_consume(PL_TT_SEMICOLON, "Expect ';' after expression.");
     pl_emit(PL_POP);
+}
+
+static void pl_finalDecl()
+{
+    if (pl_match(PL_TT_CLASS))
+    {
+        pl_classDecl(true);
+        return;
+    }
+
+    pl_errorCurrent("Expect 'class' after 'final'.");
 }
 
 static void pl_forStmt()

@@ -1797,6 +1797,7 @@ static PlExecResult pl_exec()
 
         case PL_CLASS: {
             PlClass *cls = pl_newClass(READ_STRING());
+            cls->isFinal = (bool)READ_BYTE();
             pl_push(PL_OBJECT_VALUE(cls));
             break;
         }
@@ -1811,6 +1812,13 @@ static PlExecResult pl_exec()
             }
 
             PlClass *supercls = PL_AS_CLASS(superclass);
+
+            if (supercls->isFinal)
+            {
+                pl_runtimeError("Cannot inherit class marked with 'final'.");
+                return PL_RST_EXCEPTION;
+            }
+
             PlClass *subclass = PL_AS_CLASS(pl_peek(0));
 
             pl_hashAdd(&supercls->methods, &subclass->methods);

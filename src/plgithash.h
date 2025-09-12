@@ -1,7 +1,7 @@
 #ifndef PL_GIT_HASH__H_IN
 #define PL_GIT_HASH__H_IN
 
-#define PL_GIT_HASH "3a37447"
+#define PL_GIT_HASH "e3f3295"
 
 #endif // PL_GIT_HASH__H_IN
 

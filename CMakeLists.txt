@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(Plant VERSION 0.8.0 LANGUAGES C)
+project(Plant VERSION 0.8.1 LANGUAGES C)
 
 set(PLANT_OS "")
 

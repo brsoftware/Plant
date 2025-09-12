@@ -32,6 +32,7 @@ PlClass *pl_newClass(PlString *name)
     PlClass *cls = PL_ALLOC_OBJ(PlClass, PL_OBJ_CLASS);
     cls->name = name;
     cls->initializer = PL_NULL_VALUE;
+    cls->isFinal = false;
     pl_initHash(&cls->methods);
     return cls;
 }
