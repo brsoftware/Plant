@@ -17,7 +17,7 @@ typedef enum PlPrecedence
     PL_PREC_TERM,        // + -
     PL_PREC_FACTOR,      // * / %
     PL_PREC_UNARY,       // ! - + ~ ++(prefix) --(prefix)
-    PL_PREC_CALL,        // . () ++(suffix) --(suffix) ::
+    PL_PREC_CALL,        // . () ++(suffix) --(suffix) :: []
     PL_PREC_PRIMARY
 } PlPrecedence;
 

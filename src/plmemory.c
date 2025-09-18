@@ -242,8 +242,6 @@ static void pl_freeObject(PlObject *object)
         break;
 
     case PL_OBJ_VECTOR: {
-        PlVector *vector = (PlVector*)object;
-        PL_FREE_ARRAY(PlValue, &vector->items, vector->items.capacity);
         PL_FREE(PlVector, object);
         break;
     }
