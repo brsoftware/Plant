@@ -264,6 +264,28 @@ static bool pl_callValue(PlValue callee, int argCount)
         }
     }
 
+    else if (PL_IS_NUMERAL(callee))
+    {
+        const double real = PL_AS_NUMERAL(callee);
+
+        if (!PL_IS_NUMERAL(vm.stackTop[-argCount]))
+        {
+            pl_runtimeError("Invalid operands to operation 'plant: multiply by ()'.");
+            return false;
+        }
+
+        vm.stackTop[-argCount - 1] = PL_NUMERAL_VALUE(real * PL_AS_NUMERAL(vm.stackTop[-argCount]));
+
+        if (argCount != 1)
+        {
+            pl_runtimeError("Incorrect operands to multiply; expect 1 operand but got %d.", argCount);
+            return false;
+        }
+
+        vm.stackTop--;
+        return true;
+    }
+
     char *objString = (char*)malloc(sizeof(char) * 64);
     pl_reprValuesString(callee, objString);
     pl_runtimeError("'%s' cannot be used as a function.", objString);
