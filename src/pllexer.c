@@ -223,9 +223,10 @@ static PlTokenType pl_idenType()
             case 'l':
                 return pl_checkKeyword(2, 3, "ass", PL_TT_CLASS);
             case 'o':
+                if (lexer.current - lexer.start == 8)
+                    return pl_checkKeyword(2, 6, "ntinue", PL_TT_CONTINUE);
                 if (lexer.current - lexer.start > 3)
                     return pl_checkKeyword(3, 2, "st", PL_TT_CONST);
-                return pl_checkKeyword(2, 6, "ntinue", PL_TT_CONTINUE);
             default:
                 break;
             }
