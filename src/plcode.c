@@ -1,6 +1,6 @@
 #include <PlCode>
 
-const char *pl_codeToStr(PlCode code)
+const char *pl_codeToStr(const PlCode code)
 {
     switch (code)
     {

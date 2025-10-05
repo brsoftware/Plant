@@ -179,6 +179,7 @@ static void pl_blackenObject(PlObject *object)
 
     case PL_OBJ_BUILTIN:
     case PL_OBJ_STRING:
+    default:
         break;
     }
 }

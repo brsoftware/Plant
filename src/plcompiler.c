@@ -1505,10 +1505,9 @@ static void pl_increment(bool assignable)
 
                 else if (pl_peekPrev(7) == PL_GET_GLOBAL_LONG)
                 {
-                    uint8_t globalParam1, globalParam2, globalParam3;
-                    globalParam1 = pl_peekPrev(6);
-                    globalParam2 = pl_peekPrev(5);
-                    globalParam3 = pl_peekPrev(4);
+                    uint8_t globalParam1 = pl_peekPrev(6);
+                    uint8_t globalParam2 = pl_peekPrev(5);
+                    uint8_t globalParam3 = pl_peekPrev(4);
                     pl_emit(PL_GET_GLOBAL_LONG);
                     pl_emit(globalParam1);
                     pl_emit(globalParam2);
@@ -1553,10 +1552,9 @@ static void pl_increment(bool assignable)
 
                 else if (pl_peekPrev(7) == PL_GET_GLOBAL_LONG)
                 {
-                    uint8_t globalParam1, globalParam2, globalParam3;
-                    globalParam1 = pl_peekPrev(6);
-                    globalParam2 = pl_peekPrev(5);
-                    globalParam3 = pl_peekPrev(4);
+                    uint8_t globalParam1 = pl_peekPrev(6);
+                    uint8_t globalParam2 = pl_peekPrev(5);
+                    uint8_t globalParam3 = pl_peekPrev(4);
                     pl_emit(PL_GET_GLOBAL_LONG);
                     pl_emit(globalParam1);
                     pl_emit(globalParam2);
@@ -2675,10 +2673,9 @@ static void pl_unary(bool assignable)
 
                 else if (pl_peekPrev(7) == PL_GET_GLOBAL_LONG)
                 {
-                    uint8_t globalParam1, globalParam2, globalParam3;
-                    globalParam1 = pl_peekPrev(6);
-                    globalParam2 = pl_peekPrev(5);
-                    globalParam3 = pl_peekPrev(4);
+                    uint8_t globalParam1 = pl_peekPrev(6);
+                    uint8_t globalParam2 = pl_peekPrev(5);
+                    uint8_t globalParam3 = pl_peekPrev(4);
                     pl_emit(PL_GET_GLOBAL_LONG);
                     pl_emit(globalParam1);
                     pl_emit(globalParam2);
@@ -2726,10 +2723,9 @@ static void pl_unary(bool assignable)
                     pl_emit2(PL_GET_GLOBAL, globalParam);
                 } else if (pl_peekPrev(7) == PL_GET_GLOBAL_LONG)
                 {
-                    uint8_t globalParam1, globalParam2, globalParam3;
-                    globalParam1 = pl_peekPrev(6);
-                    globalParam2 = pl_peekPrev(5);
-                    globalParam3 = pl_peekPrev(4);
+                    uint8_t globalParam1 = pl_peekPrev(6);
+                    uint8_t globalParam2 = pl_peekPrev(5);
+                    uint8_t globalParam3 = pl_peekPrev(4);
                     pl_emit(PL_GET_GLOBAL_LONG);
                     pl_emit(globalParam1);
                     pl_emit(globalParam2);

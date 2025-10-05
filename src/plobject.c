@@ -202,7 +202,7 @@ void pl_reprObject(PlValue value)
 
         for (int index = 0; index < set->set.capacity; index++)
         {
-            PlValue *elem = &set->set.elements[index];
+            const PlValue *elem = &set->set.elements[index];
 
             if (elem == NULL)
                 continue;
