@@ -67,3 +67,49 @@ void pl_concatValueArray(PlValueArray *first, PlValueArray *second)
         pl_writeValueArray(first, second->values[index]);
     }
 }
+
+bool pl_valueArrayContains(const PlValueArray *array, PlValue value)
+{
+    for (int index = 0; index < array->count; index++)
+    {
+        if (PL_IS_VECTOR(value) && PL_IS_VECTOR(array->values[index]))
+        {
+            if (pl_valueArrayEquals(&PL_AS_VECTOR(value)->items, &PL_AS_VECTOR(array->values[index])->items))
+                return true;
+            continue;
+        }
+
+        if (PL_IS_MAPPING(value) && PL_IS_MAPPING(array->values[index]))
+        {
+            if (pl_mapIsEqual(&PL_AS_MAPPING(value)->map, &PL_AS_MAPPING(array->values[index])->map))
+                return true;
+            continue;
+        }
+
+        if (PL_IS_SET(value) && PL_IS_SET(array->values[index]))
+        {
+            if (pl_isEqualSets(&PL_AS_SET(value)->set, &PL_AS_SET(array->values[index])->set))
+                return true;
+            continue;
+        }
+
+        if (pl_compValues(value, array->values[index]))
+            return true;
+    }
+
+    return false;
+}
+
+bool pl_valueArrayEquals(const PlValueArray *first, const PlValueArray *second)
+{
+    if (first->count != second->count)
+        return false;
+
+    for (int index = 0; index < first->count; index++)
+    {
+        if (!pl_valueArrayContains(second, first->values[index]))
+            return false;
+    }
+
+    return true;
+}

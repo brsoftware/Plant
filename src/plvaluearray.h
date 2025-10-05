@@ -18,5 +18,7 @@ void pl_freeValueArray(PlValueArray *array);
 void pl_insertValueArray(PlValueArray *array, PlValue input, int index);
 void pl_reverseValueArray(PlValueArray *array);
 void pl_concatValueArray(PlValueArray *first, PlValueArray *second);
+bool pl_valueArrayContains(const PlValueArray *array, PlValue value);
+bool pl_valueArrayEquals(const PlValueArray *first, const PlValueArray *second);
 
 #endif // PLVALUEARRAY_H

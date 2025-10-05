@@ -162,6 +162,12 @@ const char *pl_codeToStr(PlCode code)
         return "std";
     case PL_STD_LONG:
         return "std_long";
+    case PL_SET:
+        return "set";
+    case PL_SET_LONG:
+        return "set_long";
+    case PL_CONTAINS:
+        return "contains";
     case PL_INVALID:
         return "INVALID";
     default:

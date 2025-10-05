@@ -4,6 +4,7 @@
 #include <PlSegment>
 #include <PlHash>
 #include <PlMap>
+#include <PlSet>
 #include <PlValue>
 
 #define PL_OBJ_TYPE(value)         (PL_AS_OBJECT(value)->type)
@@ -15,6 +16,7 @@
 #define PL_IS_FUNCTION(value)     pl_isObjectType(value, PL_OBJ_FUNCTION)
 #define PL_IS_INSTANCE(value)     pl_isObjectType(value, PL_OBJ_INSTANCE)
 #define PL_IS_MAPPING(value)      pl_isObjectType(value, PL_OBJ_MAPPING)
+#define PL_IS_SET(value)          pl_isObjectType(value, PL_OBJ_SET)
 #define PL_IS_STRING(value)       pl_isObjectType(value, PL_OBJ_STRING)
 #define PL_IS_VECTOR(value)       pl_isObjectType(value, PL_OBJ_VECTOR)
 
@@ -25,6 +27,7 @@
 #define PL_AS_FUNCTION(value)      ((PlFunction*)   PL_AS_OBJECT(value))
 #define PL_AS_INSTANCE(value)      ((PlInstance*)   PL_AS_OBJECT(value))
 #define PL_AS_MAPPING(value)       ((PlMapping*)    PL_AS_OBJECT(value))
+#define PL_AS_SET(value)           ((PlSetObject*)  PL_AS_OBJECT(value))
 #define PL_AS_STRING(value)        ((PlString*)     PL_AS_OBJECT(value))
 #define PL_AS_CSTRING(value)      (((PlString*)     PL_AS_OBJECT(value))->chars)
 #define PL_AS_VECTOR(value)        ((PlVector*)     PL_AS_OBJECT(value))
@@ -38,6 +41,7 @@ typedef enum PlObjectType
     PL_OBJ_FUNCTION,
     PL_OBJ_INSTANCE,
     PL_OBJ_MAPPING,
+    PL_OBJ_SET,
     PL_OBJ_STRING,
     PL_OBJ_SURVALUE,
     PL_OBJ_VECTOR
@@ -126,6 +130,12 @@ typedef struct PlMapping
     PlMap map;
 } PlMapping;
 
+struct PlSetObject
+{
+    PlObject obj;
+    PlSet set;
+};
+
 PlBoundMethod *pl_newBoundMethod(PlValue receiver, PlClosure *method);
 PlBuiltin *pl_newBuiltin(PlBuiltinFunc function);
 PlClass *pl_newClass(PlString *name);
@@ -133,6 +143,7 @@ PlClosure *pl_newClosure(PlFunction *function);
 PlFunction *pl_newFunction();
 PlInstance *pl_newInstance(PlClass *cls);
 PlMapping *pl_newMapping();
+PlSetObject *pl_newSet();
 PlString *pl_takeString(char *chars, int length);
 PlString *pl_copyString(const char *chars, int length);
 PlSurvalue *pl_newSurvalue(PlValue *slot);

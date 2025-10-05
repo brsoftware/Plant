@@ -180,7 +180,9 @@ PlParseRule rules[] = {
     [PL_TT_PERCENTAGE_EQUAL]      = {NULL,             NULL,           PL_PREC_NONE},
     [PL_TT_BANG]                  = {pl_unary,         NULL,           PL_PREC_NONE},
     [PL_TT_BANG_EQUAL]            = {NULL,             pl_binary,      PL_PREC_EQUALITY},
+    [PL_TT_BANG_COLON]            = {NULL,             pl_binary,      PL_PREC_EQUALITY},
     [PL_TT_EQUAL]                 = {NULL,             NULL,           PL_PREC_NONE},
+    [PL_TT_EQUAL_GREATER]         = {NULL,             pl_binary,      PL_PREC_EQUALITY},
     [PL_TT_EQUAL_EQUAL]           = {NULL,             pl_binary,      PL_PREC_EQUALITY},
     [PL_TT_GREATER]               = {NULL,             pl_binary,      PL_PREC_COMPARISON},
     [PL_TT_GREATER_EQUAL]         = {NULL,             pl_binary,      PL_PREC_COMPARISON},
@@ -432,6 +434,12 @@ static void pl_binary(bool assignable)
         break;
     case PL_TT_CARET:
         pl_emit(PL_BITXOR);
+        break;
+    case PL_TT_EQUAL_GREATER:
+        pl_emit(PL_CONTAINS);
+        break;
+    case PL_TT_BANG_COLON:
+        pl_emit2(PL_CONTAINS, PL_NOT);
         break;
     default:
         return; // Unreachable.
@@ -832,14 +840,13 @@ static void pl_deleteStmt()
     pl_consume(PL_TT_IDENTIFIER, "Expect an identifier.");
 
     int local = pl_resolveLocal(cur, &parser.prev);
-    int survalue;
 
     if (local != -1)
     {
         cur->locals[local].attr |= PL_LOCAL_DELETED;
     }
 
-    else if ((survalue = pl_resolveSurvalue(cur, &parser.prev)) != -1)
+    else if (pl_resolveSurvalue(cur, &parser.prev) != -1)
     {
         pl_errorCurrent("Cannot delete a survalue.");
     }
@@ -1608,6 +1615,14 @@ static int pl_makeConstant(PlValue value)
 static void pl_map(bool assignable)
 {
     int initSize = 0;
+    bool isMap = true;
+
+    if (pl_match(PL_TT_COMMA))
+    {
+        pl_consume(PL_TT_RIGHT_BRACE, "Expect '}' after a null set.");
+        pl_emit2(PL_SET, 0);
+        return;
+    }
 
     if (!pl_check(PL_TT_RIGHT_BRACE))
     {
@@ -1620,12 +1635,22 @@ static void pl_map(bool assignable)
 
             if (initSize > 16383)
             {
-                pl_errorCurrent("Can't have more than 16383 pairs.");
+                pl_errorCurrent("Can't have more than 16383 items.");
             }
 
             pl_expr();
-            pl_consume(PL_TT_COLON, "Expect ':' after key.");
-            pl_expr();
+
+            if (pl_check(PL_TT_COMMA))
+            {
+                isMap = false;
+                continue;
+            }
+
+            if (isMap)
+            {
+                pl_consume(PL_TT_COLON, "Expect ':' after key.");
+                pl_expr();
+            }
         } while (pl_match(PL_TT_COMMA));
     }
 
@@ -1633,12 +1658,12 @@ static void pl_map(bool assignable)
 
     if (initSize <= 255)
     {
-        pl_emit2(PL_MAP, initSize);
+        pl_emit2(isMap ? PL_MAP : PL_SET, initSize);
     }
 
     else
     {
-        pl_emit(PL_MAP_LONG);
+        pl_emit(isMap ? PL_MAP_LONG : PL_SET_LONG);
         pl_emit((uint8_t)(initSize & 0xff));
         pl_emit((uint8_t)((initSize >> 8) & 0xff));
         pl_emit((uint8_t)((initSize >> 16) & 0xff));

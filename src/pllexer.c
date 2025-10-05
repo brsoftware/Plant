@@ -114,10 +114,10 @@ PlToken pl_scanToken()
             pl_match('|') ? PL_TT_OR : pl_match('=') ? PL_TT_PIPE_EQUAL : PL_TT_PIPE);
     case '!':
         return pl_genToken(
-            pl_match('=') ? PL_TT_BANG_EQUAL : PL_TT_BANG);
+            pl_match('=') ? PL_TT_BANG_EQUAL : pl_match(':') ? PL_TT_BANG_COLON : PL_TT_BANG);
     case '=':
         return pl_genToken(
-            pl_match('=') ? PL_TT_EQUAL_EQUAL : PL_TT_EQUAL);
+            pl_match('=') ? PL_TT_EQUAL_EQUAL : pl_match('>') ? PL_TT_EQUAL_GREATER : PL_TT_EQUAL);
     case '<':
         return pl_genToken(
             pl_match('=') ? PL_TT_LESS_EQUAL :
@@ -295,6 +295,8 @@ static PlTokenType pl_idenType()
             {
             case 'f':
                 return pl_checkKeyword(2, 0, "f", PL_TT_IF);
+            case 'n':
+                return pl_checkKeyword(2, 0, "n", PL_TT_EQUAL_GREATER);
             case 's':
                 if (lexer.current - lexer.start > 2 && lexer.start[2] == 'n')
                     return pl_checkKeyword(3, 1, "t", PL_TT_BANG_EQUAL);
@@ -320,6 +322,8 @@ static PlTokenType pl_idenType()
                     case 'e':
                         return pl_checkKeyword(3, 5, "xcept", PL_TT_NOEXCEPT);
                     case 't':
+                        if (lexer.current - lexer.start == 5)
+                            return pl_checkKeyword(3, 2, "in", PL_TT_BANG_COLON);
                         return pl_checkKeyword(3, 0, "t", PL_TT_BANG);
                     default:
                         break;

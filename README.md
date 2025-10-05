@@ -131,21 +131,27 @@ and
 break
 case
 class
+const
 continue
 default
+delete
 do
 else
 false
 for
 func
 if
+in
 nobreak
+noexcept
+notin
 null
 operator
 or
 print
 return
 sizeof
+std
 super
 switch
 this
@@ -511,6 +517,41 @@ print map["Init"] = 1;  // {"Init": 1, "Answer to Life": 42}
 ```
 
 Accessing a non-exist key results in an exception.
+
+A set is a non-ordered container that allows only the presence of a single element:
+
+```
+var set1 = {1,2,3,1};
+print set1;  // {1, 3, 2}, only one type of element at the same time is allowed
+```
+
+Use `&` for intersection, `|` for union, `-` for complement and `^` for symmetrical difference.
+
+```
+Plant [1] >>> var set1 = {1, 2, 3};
+Plant [2] >>> var set2 = {3, 4, 5};
+Plant [3] >>> print set1 & set2;
+{3}
+Plant [4] >>> print set1 | set2;
+{3, 2, 1, 5, 4}
+Plant [5] >>> print set1 - set2;
+{2, 1}
+Plant [6] >>> print set1 ^ set2;
+{2, 1, 5, 4}
+```
+
+You could assess whether an element is inside a vector, a map or a set by the `in` operator (equivalence: `=>`). Similarly, `notin` (equivalence: `!:`) determines whether the element is *not* present in the container:
+
+```
+var vec = [1, 2, 3, [1, 3, 2]];
+print 1 in vec;  // true
+print [1, 2, 3] => vec;  // true  // order is not important
+print 15 !: vec;  // true, "!:" means "notin"
+var map = {1: 'one', 2: 'two'};
+print 1 in map;  // true
+print 'one' => map;  // false, only works for keys
+print 1 in {1,2,3};  // true
+```
 
 You could define lambda functions (c.f. below) via `[=](){}`:
 

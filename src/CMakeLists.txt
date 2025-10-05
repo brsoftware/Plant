@@ -54,6 +54,9 @@ set(PLANT_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/PlSegment
     ${CMAKE_CURRENT_LIST_DIR}/plsegment.c
     ${CMAKE_CURRENT_LIST_DIR}/plsegment.h
+    ${CMAKE_CURRENT_LIST_DIR}/PlSet
+    ${CMAKE_CURRENT_LIST_DIR}/plset.c
+    ${CMAKE_CURRENT_LIST_DIR}/plset.h
     ${CMAKE_CURRENT_LIST_DIR}/PlStd
     ${CMAKE_CURRENT_LIST_DIR}/plstd.c
     ${CMAKE_CURRENT_LIST_DIR}/plstd.h

@@ -94,6 +94,38 @@ bool pl_mapHas(const PlMap *map, PlValue key)
     return true;
 }
 
+bool pl_mapIsEqual(const PlMap *first, const PlMap *second)
+{
+    if (first->count != second->count)
+        return false;
+
+    bool isEqual = true;
+
+    for (int index = 0; index < first->capacity; index++)
+    {
+        const PlMapItem *item = &first->items[index];
+
+        if (!PL_IS_EMPTY(item->key))
+        {
+            PlValue secondOne;
+
+            if (!pl_mapGet(second, item->key, &secondOne))
+            {
+                isEqual = false;
+                break;
+            }
+
+            if (item->value != secondOne)
+            {
+                isEqual = false;
+                break;
+            }
+        }
+    }
+
+    return isEqual;
+}
+
 void pl_mapAdd(const PlMap *from, PlMap *to)
 {
     for (int index = 0; index < from->capacity; index++)

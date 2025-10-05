@@ -54,6 +54,8 @@ const char *pl_tokToStr(PlTokenType type)
         return "!";
     case PL_TT_BANG_EQUAL:
         return "!=";
+    case PL_TT_BANG_COLON:
+        return "!:";
     case PL_TT_EQUAL:
         return "=";
     case PL_TT_EQUAL_EQUAL:

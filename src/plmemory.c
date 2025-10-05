@@ -230,6 +230,13 @@ static void pl_freeObject(PlObject *object)
         break;
     }
 
+    case PL_OBJ_SET: {
+        PlSetObject *set = (PlSetObject*)object;
+        pl_freeSet(&set->set);
+        PL_FREE(PlSet, object);
+        break;
+    }
+
     case PL_OBJ_STRING: {
         PlString *string = (PlString*)object;
         PL_FREE_ARRAY(char, string->chars, string->length + 1);

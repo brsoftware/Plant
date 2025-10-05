@@ -10,6 +10,7 @@ PlHash pl_stdMembers;
 static bool pl_builtin_abs(int argCount, PlValue *args);
 static bool pl_builtin_math_acos(int argCount, PlValue *args);
 static bool pl_builtin_math_acosh(int argCount, PlValue *args);
+static bool pl_builtin_plant_addr(int argCount, PlValue *args);
 static bool pl_builtin_math_asin(int argCount, PlValue *args);
 static bool pl_builtin_math_asinh(int argCount, PlValue *args);
 static bool pl_builtin_math_atan(int argCount, PlValue *args);
@@ -81,6 +82,7 @@ void pl_initStd()
     PL_STD_SET("abs", 3, pl_builtin_abs);
     PL_STD_SET("math.acos", 9, pl_builtin_math_acos);
     PL_STD_SET("math.acosh", 10, pl_builtin_math_acosh);
+    PL_STD_SET("plant.addr", 10, pl_builtin_plant_addr);
     PL_STD_SET("math.asin", 9, pl_builtin_math_asin);
     PL_STD_SET("math.asinh", 10, pl_builtin_math_asinh);
     PL_STD_SET("math.atan", 9, pl_builtin_math_atan);
@@ -202,6 +204,18 @@ static bool pl_builtin_math_acos(int argCount, PlValue *args)
 
         double value = PL_AS_NUMERAL(args[0]);
         args[-1] = PL_NUMERAL_VALUE(acos(value));
+        return true;
+    }
+
+    args[-1] = PL_OBJECT_VALUE(pl_copyString("Incorrect number of arguments: expect 1.", 40));
+    return false;
+}
+
+static bool pl_builtin_plant_addr(int argCount, PlValue *args)
+{
+    if (argCount == 1)
+    {
+        args[-1] = PL_NUMERAL_VALUE(args[0]);
         return true;
     }
 

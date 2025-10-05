@@ -78,6 +78,13 @@ PlMapping *pl_newMapping()
     return mapping;
 }
 
+PlSetObject *pl_newSet()
+{
+    PlSetObject *set = PL_ALLOC_OBJ(PlSetObject, PL_OBJ_SET);
+    pl_initSet(&set->set);
+    return set;
+}
+
 PlString *pl_takeString(char *chars, int length)
 {
     uint32_t hash = pl_hashString(chars, length);
@@ -181,6 +188,42 @@ void pl_reprObject(PlValue value)
         break;
     }
 
+    case PL_OBJ_SET: {
+        PlSetObject *set = PL_AS_SET(value);
+
+        if (set->set.count == 0)
+        {
+            printf("{,}");
+            break;
+        }
+
+        printf("{");
+        bool precedeEmpty = true;
+
+        for (int index = 0; index < set->set.capacity; index++)
+        {
+            PlValue *elem = &set->set.elements[index];
+
+            if (elem == NULL)
+                continue;
+
+            if (!PL_IS_EMPTY(*elem))
+            {
+                if (index > 0 && !precedeEmpty)
+                    printf(", ");
+                precedeEmpty = false;
+                if (PL_IS_STRING(*elem))
+                    printf(PL_AS_STRING(*elem)->length == 1 ? "'" : "\"");
+                pl_reprValues(*elem);
+                if (PL_IS_STRING(*elem))
+                    printf(PL_AS_STRING(*elem)->length == 1 ? "'" : "\"");
+            }
+        }
+
+        printf("}");
+        break;
+    }
+
     case PL_OBJ_STRING:
         printf("%s", PL_AS_CSTRING(value));
         break;
@@ -235,6 +278,9 @@ void pl_reprObjectString(PlValue value, char *stream)
         break;
     case PL_OBJ_MAPPING:
         sprintf(stream, "{...}");
+        break;
+    case PL_OBJ_SET:
+        sprintf(stream, "{...,}");
         break;
     case PL_OBJ_STRING:
         sprintf(stream, "%s", PL_AS_CSTRING(value));

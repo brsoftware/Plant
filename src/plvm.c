@@ -968,17 +968,7 @@ static PlExecResult pl_exec()
             {
                 PlVector *second = PL_AS_VECTOR(pl_pop());
                 PlVector *first = PL_AS_VECTOR(pl_pop());
-
-                int c;
-
-                if ((c = first->items.count) != second->items.count)
-                {
-                    pl_push(PL_FALSE_VALUE);
-                    break;
-                }
-
-                pl_push(memcmp(first->items.values, second->items.values, c) == 0
-                    ? PL_TRUE_VALUE : PL_FALSE_VALUE);
+                pl_push(PL_BOOL_VALUE(pl_valueArrayEquals(&first->items, &second->items)));
                 break;
             }
 
@@ -986,38 +976,15 @@ static PlExecResult pl_exec()
             {
                 PlMapping *second = PL_AS_MAPPING(pl_pop());
                 PlMapping *first = PL_AS_MAPPING(pl_pop());
+                pl_push(PL_BOOL_VALUE(pl_mapIsEqual(&first->map, &second->map)));
+                break;
+            }
 
-                if (first->map.count != second->map.count)
-                {
-                    pl_push(PL_FALSE_VALUE);
-                    break;
-                }
-
-                bool isEqual = true;
-
-                for (int index = 0; index < first->map.capacity; index++)
-                {
-                    PlMapItem *item = &first->map.items[index];
-
-                    if (!PL_IS_EMPTY(item->key))
-                    {
-                        PlValue secondOne;
-
-                        if (!pl_mapGet(&second->map, item->key, &secondOne))
-                        {
-                            isEqual = false;
-                            break;
-                        }
-
-                        if (item->value != secondOne)
-                        {
-                            isEqual = false;
-                            break;
-                        }
-                    }
-                }
-
-                pl_push(isEqual ? PL_TRUE_VALUE : PL_FALSE_VALUE);
+            if (PL_IS_SET(pl_peek(1)) && PL_IS_SET(pl_peek(0)))
+            {
+                PlSetObject *first = PL_AS_SET(pl_pop());
+                PlSetObject *second = PL_AS_SET(pl_pop());
+                pl_push(PL_BOOL_VALUE(pl_isEqualSets(&first->set, &second->set)));
                 break;
             }
 
@@ -1060,6 +1027,20 @@ static PlExecResult pl_exec()
                 pl_push(PL_BOOL_VALUE(first->items.count > second->items.count));
             }
 
+            else if (PL_IS_MAPPING(pl_peek(1)) && PL_IS_MAPPING(pl_peek(0)))
+            {
+                PlMapping *first = PL_AS_MAPPING(pl_pop());
+                PlMapping *second = PL_AS_MAPPING(pl_pop());
+                pl_push(PL_BOOL_VALUE(first->map.count > second->map.count));
+            }
+
+            else if (PL_IS_SET(pl_peek(1)) && PL_IS_SET(pl_peek(0)))
+            {
+                PlSetObject *first = PL_AS_SET(pl_pop());
+                PlSetObject *second = PL_AS_SET(pl_pop());
+                pl_push(PL_BOOL_VALUE(first->set.count > second->set.count));
+            }
+
             else
             {
                 if (PL_IS_INSTANCE(pl_peek(1)))
@@ -1100,6 +1081,20 @@ static PlExecResult pl_exec()
                 PlVector *second = PL_AS_VECTOR(pl_pop());
                 PlVector *first = PL_AS_VECTOR(pl_pop());
                 pl_push(PL_BOOL_VALUE(first->items.count < second->items.count));
+            }
+
+            else if (PL_IS_MAPPING(pl_peek(1)) && PL_IS_MAPPING(pl_peek(0)))
+            {
+                PlMapping *first = PL_AS_MAPPING(pl_pop());
+                PlMapping *second = PL_AS_MAPPING(pl_pop());
+                pl_push(PL_BOOL_VALUE(first->map.count < second->map.count));
+            }
+
+            else if (PL_IS_SET(pl_peek(1)) && PL_IS_SET(pl_peek(0)))
+            {
+                PlSetObject *first = PL_AS_SET(pl_pop());
+                PlSetObject *second = PL_AS_SET(pl_pop());
+                pl_push(PL_BOOL_VALUE(first->set.count < second->set.count));
             }
 
             else
@@ -1169,6 +1164,15 @@ static PlExecResult pl_exec()
                 double second = PL_AS_NUMERAL(pl_pop());
                 double first = PL_AS_NUMERAL(pl_pop());
                 pl_push(PL_NUMERAL_VALUE(first - second));
+            }
+
+            if (PL_IS_SET(pl_peek(0)) && PL_IS_SET(pl_peek(1)))
+            {
+                PlSetObject *second = PL_AS_SET(pl_pop());
+                PlSetObject *first = PL_AS_SET(pl_peek(0));
+
+                pl_push(PL_OBJECT_VALUE(pl_setDifference(&first->set, &second->set)));
+                break;
             }
 
             else
@@ -1465,6 +1469,15 @@ static PlExecResult pl_exec()
                 pl_push(PL_NUMERAL_VALUE((long long int)first & (long long int)second));
             }
 
+            if (PL_IS_SET(pl_peek(0)) && PL_IS_SET(pl_peek(1)))
+            {
+                PlSetObject *second = PL_AS_SET(pl_pop());
+                PlSetObject *first = PL_AS_SET(pl_peek(0));
+
+                pl_push(PL_OBJECT_VALUE(pl_setIntersection(&first->set, &second->set)));
+                break;
+            }
+
             else
             {
                 if (PL_IS_INSTANCE(pl_peek(1)))
@@ -1506,7 +1519,16 @@ static PlExecResult pl_exec()
                 bool second = PL_AS_BOOL(pl_pop()) == true;
                 bool first = PL_AS_BOOL(pl_pop()) == true;
 
-                pl_push(first ^ second ? PL_TRUE_VALUE : PL_FALSE_VALUE);
+                pl_push(PL_BOOL_VALUE(first ^ second));
+                break;
+            }
+
+            if (PL_IS_SET(pl_peek(0)) && PL_IS_SET(pl_peek(1)))
+            {
+                PlSetObject *second = PL_AS_SET(pl_pop());
+                PlSetObject *first = PL_AS_SET(pl_peek(0));
+
+                pl_push(PL_OBJECT_VALUE(pl_setSymmetricDifference(&first->set, &second->set)));
                 break;
             }
 
@@ -1552,6 +1574,15 @@ static PlExecResult pl_exec()
                 PlMapping *first = PL_AS_MAPPING(pl_peek(0));
 
                 pl_mapAdd(&second->map, &first->map);
+                break;
+            }
+
+            if (PL_IS_SET(pl_peek(0)) && PL_IS_SET(pl_peek(1)))
+            {
+                PlSetObject *second = PL_AS_SET(pl_pop());
+                PlSetObject *first = PL_AS_SET(pl_peek(0));
+
+                pl_push(PL_OBJECT_VALUE(pl_setUnion(&first->set, &second->set)));
                 break;
             }
 
@@ -1993,21 +2024,9 @@ static PlExecResult pl_exec()
         case PL_SIZEOF: {
             PlValue value = pl_pop();
 
-            if (PL_IS_NUMERAL(value))
-            {
-                pl_push(PL_NUMERAL_VALUE(sizeof(double)));
-                break;
-            }
-
             if (PL_IS_STRING(value))
             {
                 pl_push(PL_NUMERAL_VALUE(PL_AS_STRING(value)->length));
-                break;
-            }
-
-            if (PL_IS_BOOL(value) || PL_IS_NULL(value))
-            {
-                pl_push(4607182418800017408llu);
                 break;
             }
 
@@ -2023,8 +2042,14 @@ static PlExecResult pl_exec()
                 break;
             }
 
-            pl_push(PL_NUMERAL_VALUE(sizeof(value)));
-            break;
+            if (PL_IS_SET(value))
+            {
+                pl_push(PL_NUMERAL_VALUE(PL_AS_SET(value)->set.count));
+                break;
+            }
+
+            pl_runtimeError("Cannot assess the size of a non-sequential object.");
+            return PL_RST_EXCEPTION;
         }
 
         case PL_STD: {
@@ -2039,6 +2064,120 @@ static PlExecResult pl_exec()
             }
 
             pl_push(result);
+            break;
+        }
+
+        case PL_STD_LONG: {
+            PlString *name = READ_LONG_STRING();
+
+            PlValue result;
+
+            if (!pl_hashGet(&pl_stdMembers, name, &result))
+            {
+                pl_runtimeError("No member named '%s' in 'std'.", name->chars);
+                return PL_RST_EXCEPTION;
+            }
+
+            pl_push(result);
+            break;
+        }
+
+        case PL_SET: {
+            PlSetObject *setObject = pl_newSet();
+            uint8_t size = READ_BYTE();
+
+            for (int index = 0; index < size; index++)
+            {
+                PlValue element = pl_pop();
+
+                if (!pl_hashable(element))
+                {
+                    pl_runtimeError("Unhashable key.");
+                    return PL_RST_EXCEPTION;
+                }
+
+                pl_setSet(&setObject->set, element);
+            }
+
+            pl_push(PL_OBJECT_VALUE(setObject));
+            break;
+        }
+
+        case PL_SET_LONG: {
+            PlSetObject *setObject = pl_newSet();
+            uint8_t size = READ_LONG_BYTE();
+
+            for (int index = 0; index < size; index++)
+            {
+                PlValue element = pl_pop();
+
+                if (!pl_hashable(element))
+                {
+                    pl_runtimeError("Unhashable key.");
+                    return PL_RST_EXCEPTION;
+                }
+
+                pl_setSet(&setObject->set, element);
+            }
+
+            pl_push(PL_OBJECT_VALUE(setObject));
+            break;
+        }
+
+        case PL_CONTAINS: {
+            PlValue container = pl_pop();
+            PlValue element = pl_pop();
+
+            if (PL_IS_STRING(container))
+            {
+                if (!PL_IS_STRING(element))
+                {
+                    pl_runtimeError("Invalid types to operation 'value : <string>'; value should be substring.");
+                    return PL_RST_EXCEPTION;
+                }
+
+                pl_push(PL_BOOL_VALUE(strstr(PL_AS_CSTRING(container), PL_AS_CSTRING(element)) != 0));
+                break;
+            }
+
+            if (PL_IS_VECTOR(container))
+            {
+                pl_push(PL_BOOL_VALUE(pl_valueArrayContains(&PL_AS_VECTOR(container)->items, element)));
+                break;
+            }
+
+            if (PL_IS_MAPPING(container))
+            {
+                if (!pl_hashable(element))
+                {
+                    pl_runtimeError("Unhashable map item in operation 'item : <map>'.");
+                    return PL_RST_EXCEPTION;
+                }
+
+                pl_push(PL_BOOL_VALUE(pl_mapHas(&PL_AS_MAPPING(container)->map, element)));
+                break;
+            }
+
+            if (PL_IS_SET(container))
+            {
+                if (PL_IS_SET(element))
+                {
+                    pl_push(PL_BOOL_VALUE(pl_isSubset(&PL_AS_SET(container)->set, &PL_AS_SET(element)->set)));
+                    break;
+                }
+
+                if (!pl_hashable(element))
+                {
+                    pl_runtimeError("Unhashable set element in operation 'element : <set>'.");
+                    return PL_RST_EXCEPTION;
+                }
+
+                pl_push(PL_BOOL_VALUE(pl_setHas(&PL_AS_SET(container)->set, element)));
+                break;
+            }
+
+            pl_runtimeError("Invalid types to binary operation 'element : container'.");
+            return PL_RST_EXCEPTION;
         }
 
         default:

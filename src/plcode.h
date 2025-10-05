@@ -83,6 +83,9 @@ typedef enum PlCode
     PL_SIZEOF,
     PL_STD,
     PL_STD_LONG,
+    PL_SET,
+    PL_SET_LONG,
+    PL_CONTAINS,
     PL_INVALID = 255
 } PlCode;
 
